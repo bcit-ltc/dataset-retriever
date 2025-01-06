@@ -1,7 +1,7 @@
 services:
 
   app:
-    image: fetcherbase
+    image: retrieverbase
     command:
       - /bin/sh
       - -c
@@ -30,7 +30,7 @@ services:
 
   # Celery Service
   # celery:
-  #   image: fetcherbase
+  #   image: retrieverbase
   #   build:
   #     context: .
   #     args:
@@ -39,11 +39,11 @@ services:
   #     - /bin/sh
   #     - -c
   #     - |
-  #       /opt/venv/bin/celery -A fetcher worker --beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
-  #       /opt/venv/bin/celery -A fetcher worker --loglevel=INFO --concurrency=1 -n worker1@%h
+  #       /opt/venv/bin/celery -A retriever worker --beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+  #       /opt/venv/bin/celery -A retriever worker --loglevel=INFO --concurrency=1 -n worker1@%h
   #   working_dir: /code
     # healthcheck:
-    #   test: /opt/venv/bin/celery -A fetcherbase inspect ping worker1@%h
+    #   test: /opt/venv/bin/celery -A retrieverbase inspect ping worker1@%h
     #   interval: 30s
     #   timeout: 10s
     #   retries: 3
