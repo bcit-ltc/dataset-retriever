@@ -1,0 +1,145 @@
+{
+    "Objects": [
+        {
+            "SchemaId": "2345abcd-abcd-1234-abc1-12345abcde12",
+            "PluginId": "98765cba-dcba-4321-654321fedcba",
+            "BdsType": "Differential",
+            "CreatedDate": "2024-11-28T07:06:00.000Z",
+            "DownloadLink": "https://learn.bcit.ca/d2l/api/lp/1.43/datasets/bds/2345abcd-abcd-1234-abc1-12345abcde12/plugins/98765cba-dcba-4321-654321fedcba/extracts/ABcdEfg1HiJkLM",
+            "DownloadSize": 36905,
+            "QueuedForProcessingDate": "2024-11-28T07:05:00.000Z",
+            "Version": "9.11"
+        },
+        {
+            "SchemaId": "2345abcd-abcd-1234-abc1-12345abcde12",
+            "PluginId": "98765cba-dcba-4321-654321fedcba",
+            "BdsType": "Differential",
+            "CreatedDate": "2024-11-27T07:06:11.000Z",
+            "DownloadLink": "https://learn.bcit.ca/d2l/api/lp/1.43/datasets/bds/2345abcd-abcd-1234-abc1-12345abcde12/plugins/98765cba-dcba-4321-654321fedcba/extracts/ABcdEfg1HiJkLM",
+            "DownloadSize": 144486,
+            "QueuedForProcessingDate": "2024-11-27T07:05:00.000Z",
+            "Version": "9.10"
+        },
+        {
+            "SchemaId": "2345abcd-abcd-1234-abc1-12345abcde12",
+            "PluginId": "98765cba-dcba-4321-654321fedcba",
+            "BdsType": "Differential",
+            "CreatedDate": "2024-11-26T07:06:03.000Z",
+            "DownloadLink": "https://learn.bcit.ca/d2l/api/lp/1.43/datasets/bds/2345abcd-abcd-1234-abc1-12345abcde12/plugins/98765cba-dcba-4321-654321fedcba/extracts/ABcdEfg1HiJkLM",
+            "DownloadSize": 71434,
+            "QueuedForProcessingDate": "2024-11-26T07:05:00.000Z",
+            "Version": "9.10"
+        },
+        {
+            "SchemaId": "2345abcd-abcd-1234-abc1-12345abcde12",
+            "PluginId": "98765cba-dcba-4321-654321fedcba",
+            "BdsType": "Differential",
+            "CreatedDate": "2024-11-25T07:06:08.000Z",
+            "DownloadLink": "https://learn.bcit.ca/d2l/api/lp/1.43/datasets/bds/2345abcd-abcd-1234-abc1-12345abcde12/plugins/98765cba-dcba-4321-654321fedcba/extracts/ABcdEfg1HiJkLM",
+            "DownloadSize": 49104,
+            "QueuedForProcessingDate": "2024-11-25T07:05:00.000Z",
+            "Version": "9.10"
+        },
+        {
+            "SchemaId": "2345abcd-abcd-1234-abc1-12345abcde12",
+            "PluginId": "98765cba-dcba-4321-654321fedcba",
+            "BdsType": "Differential",
+            "CreatedDate": "2024-11-24T07:06:14.000Z",
+            "DownloadLink": "https://learn.bcit.ca/d2l/api/lp/1.43/datasets/bds/2345abcd-abcd-1234-abc1-12345abcde12/plugins/98765cba-dcba-4321-654321fedcba/extracts/ABcdEfg1HiJkLM",
+            "DownloadSize": 7494,
+            "QueuedForProcessingDate": "2024-11-24T07:05:00.000Z",
+            "Version": "9.10"
+        },
+        {
+            "SchemaId": "2345abcd-abcd-1234-abc1-12345abcde12",
+            "PluginId": "98765cba-dcba-4321-654321fedcba",
+            "BdsType": "Differential",
+            "CreatedDate": "2024-11-23T07:06:05.000Z",
+            "DownloadLink": "https://learn.bcit.ca/d2l/api/lp/1.43/datasets/bds/2345abcd-abcd-1234-abc1-12345abcde12/plugins/98765cba-dcba-4321-654321fedcba/extracts/ABcdEfg1HiJkLM",
+            "DownloadSize": 33856,
+            "QueuedForProcessingDate": "2024-11-23T07:05:00.000Z",
+            "Version": "9.10"
+        },
+        {
+            "SchemaId": "2345abcd-abcd-1234-abc1-12345abcde12",
+            "PluginId": "98765cba-dcba-4321-654321fedcba",
+            "BdsType": "Differential",
+            "CreatedDate": "2024-11-22T07:06:37.000Z",
+            "DownloadLink": "https://learn.bcit.ca/d2l/api/lp/1.43/datasets/bds/2345abcd-abcd-1234-abc1-12345abcde12/plugins/98765cba-dcba-4321-654321fedcba/extracts/ABcdEfg1HiJkLM",
+            "DownloadSize": 114188,
+            "QueuedForProcessingDate": "2024-11-22T07:05:00.000Z",
+            "Version": "9.10"
+        },
+        {
+            "SchemaId": "2345abcd-abcd-1234-abc1-12345abcde12",
+            "PluginId": "98765cba-dcba-4321-654321fedcba",
+            "BdsType": "Differential",
+            "CreatedDate": "2024-11-21T07:06:00.000Z",
+            "DownloadLink": "https://learn.bcit.ca/d2l/api/lp/1.43/datasets/bds/2345abcd-abcd-1234-abc1-12345abcde12/plugins/98765cba-dcba-4321-654321fedcba/extracts/ABcdEfg1HiJkLM",
+            "DownloadSize": 63236,
+            "QueuedForProcessingDate": "2024-11-21T07:05:00.000Z",
+            "Version": "9.10"
+        },
+        {
+            "SchemaId": "2345abcd-abcd-1234-abc1-12345abcde12",
+            "PluginId": "98765cba-dcba-4321-654321fedcba",
+            "BdsType": "Differential",
+            "CreatedDate": "2024-11-20T07:06:14.000Z",
+            "DownloadLink": "https://learn.bcit.ca/d2l/api/lp/1.43/datasets/bds/2345abcd-abcd-1234-abc1-12345abcde12/plugins/98765cba-dcba-4321-654321fedcba/extracts/ABcdEfg1HiJkLM",
+            "DownloadSize": 47550,
+            "QueuedForProcessingDate": "2024-11-20T07:05:00.000Z",
+            "Version": "9.10"
+        },
+        {
+            "SchemaId": "2345abcd-abcd-1234-abc1-12345abcde12",
+            "PluginId": "98765cba-dcba-4321-654321fedcba",
+            "BdsType": "Differential",
+            "CreatedDate": "2024-11-19T07:06:08.000Z",
+            "DownloadLink": "https://learn.bcit.ca/d2l/api/lp/1.43/datasets/bds/2345abcd-abcd-1234-abc1-12345abcde12/plugins/98765cba-dcba-4321-654321fedcba/extracts/ABcdEfg1HiJkLM",
+            "DownloadSize": 43501,
+            "QueuedForProcessingDate": "2024-11-19T07:05:00.000Z",
+            "Version": "9.10"
+        },
+        {
+            "SchemaId": "2345abcd-abcd-1234-abc1-12345abcde12",
+            "PluginId": "98765cba-dcba-4321-654321fedcba",
+            "BdsType": "Differential",
+            "CreatedDate": "2024-11-18T07:06:02.000Z",
+            "DownloadLink": "https://learn.bcit.ca/d2l/api/lp/1.43/datasets/bds/2345abcd-abcd-1234-abc1-12345abcde12/plugins/98765cba-dcba-4321-654321fedcba/extracts/ABcdEfg1HiJkLM",
+            "DownloadSize": 7868,
+            "QueuedForProcessingDate": "2024-11-18T07:05:00.000Z",
+            "Version": "9.10"
+        },
+        {
+            "SchemaId": "2345abcd-abcd-1234-abc1-12345abcde12",
+            "PluginId": "98765cba-dcba-4321-654321fedcba",
+            "BdsType": "Differential",
+            "CreatedDate": "2024-11-17T07:06:05.000Z",
+            "DownloadLink": "https://learn.bcit.ca/d2l/api/lp/1.43/datasets/bds/2345abcd-abcd-1234-abc1-12345abcde12/plugins/98765cba-dcba-4321-654321fedcba/extracts/ABcdEfg1HiJkLM",
+            "DownloadSize": 8363,
+            "QueuedForProcessingDate": "2024-11-17T07:05:00.000Z",
+            "Version": "9.10"
+        },
+        {
+            "SchemaId": "2345abcd-abcd-1234-abc1-12345abcde12",
+            "PluginId": "98765cba-dcba-4321-654321fedcba",
+            "BdsType": "Differential",
+            "CreatedDate": "2024-11-16T07:06:07.000Z",
+            "DownloadLink": "https://learn.bcit.ca/d2l/api/lp/1.43/datasets/bds/2345abcd-abcd-1234-abc1-12345abcde12/plugins/98765cba-dcba-4321-654321fedcba/extracts/ABcdEfg1HiJkLM",
+            "DownloadSize": 50659,
+            "QueuedForProcessingDate": "2024-11-16T07:05:00.000Z",
+            "Version": "9.10"
+        },
+        {
+            "SchemaId": "2345abcd-abcd-1234-abc1-12345abcde12",
+            "PluginId": "98765cba-dcba-4321-654321fedcba",
+            "BdsType": "Differential",
+            "CreatedDate": "2024-11-15T07:06:16.000Z",
+            "DownloadLink": "https://learn.bcit.ca/d2l/api/lp/1.43/datasets/bds/2345abcd-abcd-1234-abc1-12345abcde12/plugins/98765cba-dcba-4321-654321fedcba/extracts/ABcdEfg1HiJkLM",
+            "DownloadSize": 97289,
+            "QueuedForProcessingDate": "2024-11-15T07:05:00.000Z",
+            "Version": "9.10"
+        }
+    ],
+    "Next": null
+}
