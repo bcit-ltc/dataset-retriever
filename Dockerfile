@@ -1,6 +1,6 @@
 FROM python:3.13.1-slim AS base
-ENV PYTHONUNBUFFERED 1
-ENV PATH /code:/opt/venv/bin:$PATH
+ENV PYTHONUNBUFFERED=1
+ENV PATH=/code:/opt/venv/bin:$PATH
 
 RUN set -ex; \
         apt-get update; \
@@ -19,8 +19,8 @@ RUN set -ex; \
 # ============================================ Release
 
 FROM python:3.13.1-slim AS release
-ENV PYTHONUNBUFFERED 1
-ENV PATH /code:/opt/venv/bin:$PATH
+ENV PYTHONUNBUFFERED=1
+ENV PATH=/code:/opt/venv/bin:$PATH
 WORKDIR /code
 ARG VERSION
 ENV VERSION=${VERSION:-1.0.0}
