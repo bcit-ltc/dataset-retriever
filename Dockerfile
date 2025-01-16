@@ -1,4 +1,5 @@
 FROM python:3.13.1-slim AS base
+LABEL org.opencontainers.image.source https://github.com/BCIT-LTC/dataset-retriever
 ENV PYTHONUNBUFFERED=1
 ENV PATH=/code:/opt/venv/bin:$PATH
 
