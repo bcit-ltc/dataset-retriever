@@ -177,6 +177,7 @@ jobs:
           elif [ "${{ needs.determine-environment.outputs.environment }}" == "stable" ]; then
             docker push ghcr.io/bcit-ltc/${{ github.event.repository.name }}:$TAG
             docker push ghcr.io/bcit-ltc/${{ github.event.repository.name }}:latest
+            docker push ghcr.io/bcit-ltc/${{ github.event.repository.name }}:${{ needs.choose-current-version-if-next-empty.outputs.version }}
             docker push ghcr.io/bcit-ltc/${{ github.event.repository.name }}:stable
           elif [ "${{ needs.determine-environment.outputs.environment }}" == "review" ]; then
             docker push ghcr.io/bcit-ltc/${{ github.event.repository.name }}:review--${{ github.ref_name }}--$(git rev-parse --short HEAD)
