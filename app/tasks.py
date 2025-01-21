@@ -75,7 +75,7 @@ def cleanup(arg):
 
         try:
             date = result['CreatedDate'].replace(":", "-").replace("T", "_").split(".")[0]
-            file_name = f"{differential['Name']}__{date}.csv"
+            
 
             # TODO: Fetch the zip file from result['DownloadLink']
             # zip_response = requests.get(result['DownloadLink'])
@@ -89,15 +89,21 @@ def cleanup(arg):
             try:
                 # Unzip the file and get the CSV file-like object
                 with zipfile.ZipFile(zip_file, 'r') as zip_ref:
-                    for file_info in zip_ref.infolist():
+                    file_list = zip_ref.infolist()
+                    num_files = len(file_list)
+                    for index, file_info in enumerate(file_list):
                         if file_info.filename.endswith('.csv'):
                             with zip_ref.open(file_info.filename) as csv_file:
+                                # Determine the upload path. The zip file is supposed to contain only one CSV file, but just in case there are more, we'll add an index to the file name
+                                if num_files > 1:
+                                    file_name = f"{differential['Name']}__{date}__{index}.csv"
+                                else:
+                                    file_name = f"{differential['Name']}__{date}.csv"
                                 # Write the CSV file-like object to the remote file
                                 upload_path = os.path.join(smb_path, file_name)
                                 with open_file(upload_path, mode="wb") as remote_file:
                                     copyfileobj(csv_file, remote_file)
                             loggercelery.info(f"Successfully uploaded {file_info.filename} to {upload_path}")
-                            break  # Exit the loop after processing the first CSV file
 
             except Exception as e:
                 loggercelery.error(f"Failed to upload file: {e}")
