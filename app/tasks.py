@@ -1,16 +1,76 @@
+import io
+import json
+import os
+import zipfile
 from celery import shared_task
 from celery.utils.log import get_task_logger
-import requests
-import json
-import io
-import zipfile
+from dotenv import load_dotenv
+from smbclient import link, open_file, register_session
+from smbclient.shutil import copyfile, copyfileobj
+
+load_dotenv()
 
 loggercelery = get_task_logger(__name__)
-
+username = os.getenv("USERNAME")
+password = os.getenv("PASSWORD")
+smb_server = os.getenv("SMB_SERVER")
+smb_path = os.getenv("SMB_PATH")
 @shared_task(name='task1')
 def cleanup(arg):
+    register_session(smb_server, username=username, password=password)
     loggercelery.info(f"task1 ran arg: {arg}")
+    local_zip_file = 'app/test/Grade Results Differential.zip'
+    csv_filename_in_zip = "grade-results-differential__2024-11-15_07-06-16.csv"
+    remote_csv_path = smb_path + r"\grade-results-differential__2024-11-15_07-06-19.csv"
+
+    try:
+        # Unzip the file and get the CSV file-like object
+        with zipfile.ZipFile(local_zip_file, 'r') as zip_ref:
+            for file_info in zip_ref.infolist():
+                if file_info.filename.endswith('.csv'):
+                    with zip_ref.open(file_info.filename) as csv_file:
+                        # Write the CSV file-like object to the remote file
+                        with open_file(remote_csv_path, mode="wb") as remote_file:
+                            copyfileobj(csv_file, remote_file)
+                    break  # Exit the loop after processing the first CSV file
+
+        loggercelery.info(f"Successfully uploaded {csv_filename_in_zip} to {remote_csv_path}")
+    except Exception as e:
+        loggercelery.error(f"Failed to upload file: {e}")
+        print(f"Failed to upload file: {e}")
     return None
+    
+    
+    
+    # try:
+    #     # Copy the local CSV file to the remote path
+    #     copyfile(local_csv_path, remote_csv_path)
+    #     loggercelery.info(f"Successfully uploaded {local_csv_path} to {remote_csv_path}")
+    # except Exception as e:
+    #     loggercelery.error(f"Failed to upload file: {e}")
+    #     print(f"Failed to upload file: {e}")
+    # return None
+
+    # try:
+    #     with open_file(smb_path + r"\kyle-was-here.md", username=username, password=password) as f:
+    #         loggercelery.info(f.read())
+    #         print(f.read())
+    # except Exception as e:
+    #     loggercelery.error(f"Failed to read file: {e}")
+    #     print(f"Failed to read file: {e}")
+    # loggercelery.info(f"task2 completed with arg: {arg}")
+    # return None
+
+
+    # try:
+    #     with open_file(smb_path + r"\kyle-was-here.md", mode="rb") as f:
+    #         loggercelery.info(f.read())
+    #         print(f.read())
+    # except Exception as e:
+    #     loggercelery.error(f"Failed to read file: {e}")
+    #     print(f"Failed to read file: {e}")
+    # loggercelery.info(f"task2 completed with arg: {arg}")
+    # return None
 
 @shared_task(name='task2')
 def task2(arg):
