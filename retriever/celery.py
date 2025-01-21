@@ -24,9 +24,9 @@ app.conf.beat_schedule = {
         'schedule': crontab(), # runs every minute
         'args': ([10])
     },
-    'task2-schedule':{
-        'task': 'task2',
-        'schedule': crontab(),
-        'args': ([20])
-    },
+    # 'task2-schedule':{
+    #     'task': 'task2',
+    #     'schedule': crontab(),
+    #     'args': ([20])
+    # },
 }
