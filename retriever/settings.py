@@ -9,8 +9,22 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
 from pathlib import Path
+import os
+
+# OAUTH related environment variables
+OAUTH2_PROVIDER_AUTHORIZATION_URL = os.getenv('OAUTH2_PROVIDER_AUTHORIZATION_URL')
+OAUTH2_PROVIDER_TOKEN_URL = os.getenv('OAUTH2_PROVIDER_TOKEN_URL')
+OAUTH2_CLIENT_ID = os.getenv('OAUTH2_CLIENT_ID')
+OAUTH2_CLIENT_SECRET = os.getenv('OAUTH2_CLIENT_SECRET')
+OAUTH2_REDIRECT_URI = os.getenv('OAUTH2_REDIRECT_URI')
+OAUTH2_SCOPE = os.getenv('OAUTH2_SCOPE')
+
+# SMB related environment variables
+NETWORK_DRIVE_USERNAME = os.getenv('NETWORK_DRIVE_USERNAME')
+NETWORK_DRIVE_PASSWORD = os.getenv('NETWORK_DRIVE_PASSWORD')
+NETWORK_DRIVE_SERVER = os.getenv('NETWORK_DRIVE_SERVER')
+NETWORK_DRIVE_PATH = os.getenv('NETWORK_DRIVE_PATH')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,12 +52,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # 'oauth2_provider',
+    'corsheaders',
+
     'django_celery_beat',
 
     'app'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -53,12 +71,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CORS_ORIGIN_ALLOW_ALL = True
+
 ROOT_URLCONF = 'retriever.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -81,6 +101,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': ':memory:',
+        # 'NAME': BASE_DIR / "db.sqlite3",
     }
 }
 
@@ -192,10 +213,9 @@ LOGGING = {
 }
 
 # OAuth configuration
-# OAUTH_CLIENT_ID = "your-client-id"
-# OAUTH_CLIENT_SECRET = "your-client-secret"
-# OAUTH_REDIRECT_URI = "http://localhost:8000/oauth/callback/"
-# OAUTH_AUTHORIZATION_URL = "https://provider.com/oauth/authorize"  # Replace with the provider's URL
-# OAUTH_TOKEN_URL = "https://provider.com/oauth/token"              # Replace with the provider's URL
-# OAUTH_USERINFO_URL = "https://provider.com/userinfo"              # Optional: Replace with the URL to fetch user info
-
+OAUTH2_PROVIDER_AUTHORIZATION_URL = 'https://provider.com/oauth2/authorize'
+OAUTH2_PROVIDER_TOKEN_URL = 'https://provider.com/oauth2/token'
+OAUTH2_CLIENT_ID = 'your-client-id'
+OAUTH2_CLIENT_SECRET = 'your-client-secret'
+OAUTH2_REDIRECT_URI = 'https://yourdomain.com/oauth2/callback'
+OAUTH2_SCOPE = ['scope1', 'scope2']
