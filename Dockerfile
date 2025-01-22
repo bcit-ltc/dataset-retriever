@@ -39,10 +39,10 @@ RUN echo $VERSION > .env
 COPY --from=base /root/.cache /root/.cache
 COPY --from=base /opt/venv /opt/venv
 
-# COPY manage.py ./
+COPY manage.py ./
 COPY docker-entrypoint.sh /usr/local/bin
-
-# COPY api api
+COPY retriever retriever
+COPY app app
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
