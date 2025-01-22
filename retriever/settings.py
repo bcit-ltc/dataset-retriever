@@ -199,10 +199,9 @@ LOGGING = {
 }
 
 # OAuth configuration
-# OAUTH_CLIENT_ID = "your-client-id"
-# OAUTH_CLIENT_SECRET = "your-client-secret"
-# OAUTH_REDIRECT_URI = "http://localhost:8000/oauth/callback/"
-# OAUTH_AUTHORIZATION_URL = "https://provider.com/oauth/authorize"  # Replace with the provider's URL
-# OAUTH_TOKEN_URL = "https://provider.com/oauth/token"              # Replace with the provider's URL
-# OAUTH_USERINFO_URL = "https://provider.com/userinfo"              # Optional: Replace with the URL to fetch user info
-
+OAUTH2_PROVIDER_AUTHORIZATION_URL = 'https://provider.com/oauth2/authorize'
+OAUTH2_PROVIDER_TOKEN_URL = 'https://provider.com/oauth2/token'
+OAUTH2_CLIENT_ID = 'your-client-id'
+OAUTH2_CLIENT_SECRET = 'your-client-secret'
+OAUTH2_REDIRECT_URI = 'https://yourdomain.com/oauth2/callback'
+OAUTH2_SCOPE = ['scope1', 'scope2']
