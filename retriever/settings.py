@@ -39,8 +39,7 @@ SECRET_KEY = 'django-insecure-s4&hznh9bz3y7&8&la$hawthpphvsc88au0&f*f_++8m^w0@n3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*', 'dataset-retriever.ltc.bcit.ca', 'localhost']
 
 # Application definition
 
