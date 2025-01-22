@@ -9,8 +9,22 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
 from pathlib import Path
+import os
+
+# OAUTH related environment variables
+OAUTH2_PROVIDER_AUTHORIZATION_URL = os.getenv('OAUTH2_PROVIDER_AUTHORIZATION_URL')
+OAUTH2_PROVIDER_TOKEN_URL = os.getenv('OAUTH2_PROVIDER_TOKEN_URL')
+OAUTH2_CLIENT_ID = os.getenv('OAUTH2_CLIENT_ID')
+OAUTH2_CLIENT_SECRET = os.getenv('OAUTH2_CLIENT_SECRET')
+OAUTH2_REDIRECT_URI = os.getenv('OAUTH2_REDIRECT_URI')
+OAUTH2_SCOPE = os.getenv('OAUTH2_SCOPE')
+
+# SMB related environment variables
+NETWORK_DRIVE_USERNAME = os.getenv('NETWORK_DRIVE_USERNAME')
+NETWORK_DRIVE_PASSWORD = os.getenv('NETWORK_DRIVE_PASSWORD')
+NETWORK_DRIVE_SERVER = os.getenv('NETWORK_DRIVE_SERVER')
+NETWORK_DRIVE_PATH = os.getenv('NETWORK_DRIVE_PATH')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

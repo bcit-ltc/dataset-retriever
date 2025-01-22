@@ -50,7 +50,7 @@ ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 EXPOSE 9000
 
-CMD ["tail", "-f", "/dev/null"]
+# CMD ["tail", "-f", "/dev/null"]
 
-# CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:9000", "--forwarded-allow-ips=*", \
-# "--log-level", "info", "--timeout", "120", "--graceful-timeout", "120", "retriever.wsgi"]
+CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:9000", "--forwarded-allow-ips=*", \
+"--log-level", "info", "--timeout", "120", "--graceful-timeout", "120", "retriever.wsgi"]
