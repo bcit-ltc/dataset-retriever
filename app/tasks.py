@@ -5,8 +5,8 @@ import zipfile
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from dotenv import load_dotenv
-from smbclient import link, open_file, register_session
-from smbclient.shutil import copyfile, copyfileobj
+from smbclient import open_file, register_session
+from smbclient.shutil import copyfileobj
 
 load_dotenv()
 
@@ -19,62 +19,6 @@ smb_path = os.getenv("SMB_PATH")
 def cleanup(arg):
     register_session(smb_server, username=username, password=password)
     loggercelery.info(f"task1 ran arg: {arg}")
-    local_zip_file = 'app/test/Grade Results Differential.zip'
-    csv_filename_in_zip = "grade-results-differential__2024-11-15_07-06-16.csv"
-    remote_csv_path = smb_path + r"\grade-results-differential__2024-11-15_07-06-19.csv"
-
-    try:
-        # Unzip the file and get the CSV file-like object
-        with zipfile.ZipFile(local_zip_file, 'r') as zip_ref:
-            for file_info in zip_ref.infolist():
-                if file_info.filename.endswith('.csv'):
-                    with zip_ref.open(file_info.filename) as csv_file:
-                        # Write the CSV file-like object to the remote file
-                        with open_file(remote_csv_path, mode="wb") as remote_file:
-                            copyfileobj(csv_file, remote_file)
-                    break  # Exit the loop after processing the first CSV file
-
-        loggercelery.info(f"Successfully uploaded {csv_filename_in_zip} to {remote_csv_path}")
-    except Exception as e:
-        loggercelery.error(f"Failed to upload file: {e}")
-        print(f"Failed to upload file: {e}")
-    return None
-    
-    
-    
-    # try:
-    #     # Copy the local CSV file to the remote path
-    #     copyfile(local_csv_path, remote_csv_path)
-    #     loggercelery.info(f"Successfully uploaded {local_csv_path} to {remote_csv_path}")
-    # except Exception as e:
-    #     loggercelery.error(f"Failed to upload file: {e}")
-    #     print(f"Failed to upload file: {e}")
-    # return None
-
-    # try:
-    #     with open_file(smb_path + r"\kyle-was-here.md", username=username, password=password) as f:
-    #         loggercelery.info(f.read())
-    #         print(f.read())
-    # except Exception as e:
-    #     loggercelery.error(f"Failed to read file: {e}")
-    #     print(f"Failed to read file: {e}")
-    # loggercelery.info(f"task2 completed with arg: {arg}")
-    # return None
-
-
-    # try:
-    #     with open_file(smb_path + r"\kyle-was-here.md", mode="rb") as f:
-    #         loggercelery.info(f.read())
-    #         print(f.read())
-    # except Exception as e:
-    #     loggercelery.error(f"Failed to read file: {e}")
-    #     print(f"Failed to read file: {e}")
-    # loggercelery.info(f"task2 completed with arg: {arg}")
-    # return None
-
-@shared_task(name='task2')
-def task2(arg):
-
     fileLocation = 'app/test/response.json'
     try:
         with open(fileLocation, 'r') as f:
@@ -127,12 +71,11 @@ def task2(arg):
 
     # loggercelery.info(f"results: {results}")
 
-    fileLocation3 = 'app/test/Grade Results Differential.zip'
     for result in results:
 
         try:
             date = result['CreatedDate'].replace(":", "-").replace("T", "_").split(".")[0]
-            file_name = f"{differential['Name']}__{date}.csv"
+            
 
             # TODO: Fetch the zip file from result['DownloadLink']
             # zip_response = requests.get(result['DownloadLink'])
@@ -141,57 +84,40 @@ def task2(arg):
             # csv_file_name = zip_file.namelist()[0]
             # file_content = zip_file.read(csv_file_name)
 
-            # Open the zip file from the file path
-            with open(fileLocation3, 'rb') as f:
-                zip_file = zipfile.ZipFile(io.BytesIO(f.read()))
-                csv_file_name = zip_file.namelist()[0]
-                file_content = zip_file.read(csv_file_name)
+            zip_file = 'app/test/Grade Results Differential.zip'
 
-                # Save file content to 'app/test' directory
-                with open(f"app/test/{file_name}", "wb") as f_out:
-                    f_out.write(file_content)
-                    loggercelery.info(f"File saved: {file_name}")
+            try:
+                # Unzip the file and get the CSV file-like object
+                with zipfile.ZipFile(zip_file, 'r') as zip_ref:
+                    file_list = zip_ref.infolist()
+                    num_files = len(file_list)
+                    for index, file_info in enumerate(file_list):
+                        if file_info.filename.endswith('.csv'):
+                            with zip_ref.open(file_info.filename) as csv_file:
+                                # Determine the upload path. The zip file is supposed to contain only one CSV file, but just in case there are more, we'll add an index to the file name
+                                if num_files > 1:
+                                    file_name = f"{differential['Name']}__{date}__{index}.csv"
+                                else:
+                                    file_name = f"{differential['Name']}__{date}.csv"
+                                # Write the CSV file-like object to the remote file
+                                upload_path = os.path.join(smb_path, file_name)
+                                with open_file(upload_path, mode="wb") as remote_file:
+                                    copyfileobj(csv_file, remote_file)
+                            loggercelery.info(f"Successfully uploaded {file_info.filename} to {upload_path}")
 
-            # upload_response = requests.post(
-            #     "https://your-shared-folder-upload-url",
-            #     files={"file": (file_name, file_content)},
-            #     headers={"Content-Disposition": f'attachment; filename="{file_name}"'}
-            # )
+            except Exception as e:
+                loggercelery.error(f"Failed to upload file: {e}")
+                print(f"Failed to upload file: {e}")
 
-            # if upload_response.status_code != 200:
-            #     raise Exception("Failed to upload file")
 
-            
         except Exception as e:
             loggercelery.error(f"Failed to process {differential['Name']} from {differential['ExtractsLink']}: {e}")
             results.append({**differential, 'error': "Failed to process latest extract"})
     
+    return None
     
-    # """Fetch data from an external endpoint and process it."""
-    # endpoint = "https://animechan.io/api/v1/quotes/random"
-    # headers = {
-    #     "Authorization": "Bearer YOUR_ACCESS_TOKEN",  # If needed
-    #     "Content-Type": "application/json",
-    # }
 
-    # try:
-    #     # Perform the GET request
-    #     response = requests.get(endpoint, headers=headers, timeout=10)
-
-    #     # Check if the request was successful
-    #     if response.status_code == 200:
-    #         data = response.json()  # Parse the JSON response
-    #         print("Data fetched successfully:", data)
-    #         loggercelery.info(f"Data fetched successfully: {data}")
-    #         # Process the data (e.g., store it in the database)
-    #         return data
-    #     else:
-    #         print(f"Failed to fetch data. Status code: {response.status_code}")
-    #         print(f"Error: {response.text}")
-    #         loggercelery.info(f"Failed to fetch data. Status code: {response.status_code}")
-    #         loggercelery.info(f"Error: {response.text}")
-    #         return None
-    # except requests.exceptions.RequestException as e:
-    #     print(f"An error occurred: {e}")
-    #     loggercelery.info(f"An error occurred: {e}")
-        # return None
+@shared_task(name='task2')
+def task2(arg):
+    loggercelery.info(f"task2 ran arg: {arg}")
+    return None
