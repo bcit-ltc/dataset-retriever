@@ -211,10 +211,4 @@ LOGGING = {
     },
 }
 
-# OAuth configuration
-OAUTH2_PROVIDER_AUTHORIZATION_URL = 'https://provider.com/oauth2/authorize'
-OAUTH2_PROVIDER_TOKEN_URL = 'https://provider.com/oauth2/token'
-OAUTH2_CLIENT_ID = 'your-client-id'
-OAUTH2_CLIENT_SECRET = 'your-client-secret'
-OAUTH2_REDIRECT_URI = 'https://yourdomain.com/oauth2/callback'
-OAUTH2_SCOPE = ['scope1', 'scope2']
+
