@@ -1,0 +1,192 @@
+name: Course Production Pipeline CI
+
+on:
+  push:
+    branches:
+      - main
+      - '[0-9]+-*'
+
+permissions:
+  contents: read # for checkout
+
+jobs:
+        
+  semantic-release:
+    name: Determine Next Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-next-version.outputs.VERSION_NUM }}
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+      id-token: write # to enable use of OIDC for npm provenance
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+      - run: npm init -y
+      - run: npm install --save-dev semantic-release @semantic-release/exec 
+      - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
+        run: npm audit signatures
+      - name: semantic release config
+        run: |
+          echo "Configuring local \".releaserc\" file..."
+          echo '{
+            "branches": [
+              "main" ],
+            "tagFormat": "${version}",
+            "plugins": [
+              "@semantic-release/commit-analyzer",
+              "@semantic-release/release-notes-generator",
+              [
+                "@semantic-release/exec",
+                {
+                  "verifyReleaseCmd": "echo ${nextRelease.version} > NEXT_VERSION"
+                }
+              ],
+              "@semantic-release/github"
+            ]
+          }' \
+            > .releaserc
+
+          echo "  Done."
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GA_TOKEN }}
+        run: npx semantic-release 
+      - name: Set the version
+        id: set-next-version
+        run: |
+          echo VERSION_NUM=$(cat NEXT_VERSION) >> $GITHUB_OUTPUT
+      - name: verify the version
+        run: |
+          if [ -z "${{ steps.set-next-version.outputs.VERSION_NUM }}" ]; then
+            echo "No version found, cancelling job."
+            exit 0
+          else
+            echo "Version found: ${{ steps.set-next-version.outputs.VERSION_NUM }}"     
+          fi
+
+  previous-version:
+    name: Choose Current Version if Next Empty
+    needs: [semantic-release]
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-chosen-version.outputs.CHOSEN_VERSION }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch all tags
+        run: git fetch --tags
+
+      - name: Get latest tag
+        run: echo "$(git describe --tags `git rev-list --tags --max-count=1`)" > TAG
+
+      - name: Print latest tag
+        run: echo "The latest tag is $(cat TAG)"
+
+      - name: If next version is empty choose latest tag
+        id: get-chosen-version
+        run: |
+          if [ -z "${{ needs.semantic-release.outputs.version }}" ]; then
+            echo "CHOSEN_VERSION=$(cat TAG)" >> $GITHUB_OUTPUT
+          else
+            echo "CHOSEN_VERSION=${{ needs.semantic-release.outputs.version }}" >> $GITHUB_OUTPUT
+          fi
+          
+  ## This is the step that determines the environment
+  ## conditionally chooses latest, stable or review based on branch and commit
+  determine-environment:
+    name: Determine Environment
+    needs: [semantic-release, previous-version]
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.set-environment.outputs.ENVIRONMENT }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get commit message
+        id: get-commit-message
+        run: echo "COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+      - name: Set the environment
+        id: set-environment
+        run: |
+          if [ "${{ github.ref_name }}" == "main" ]; then
+            if [[ "${{ env.COMMIT_MESSAGE }}" =~ ^(fix\s*:\s*|feat\s*:\s*|major\s*:\s*) ]]; then
+              ENV_NAME="stable"
+            else
+              ENV_NAME="latest"
+            fi
+          elif [[ "${{ github.ref_name }}" =~ ^[0-9]+-.*$ ]]; then
+            ENV_NAME="review"
+          fi
+          echo ENVIRONMENT=$ENV_NAME >> $GITHUB_OUTPUT
+
+      - name: print the environment
+        run: echo "The environment is ${{ steps.set-environment.outputs.ENVIRONMENT }}"
+
+  build-for-environment:
+    name: Build
+    needs: [previous-version, determine-environment]
+    if: ${{ needs.determine-environment.outputs.environment != '' }}
+    runs-on: ubuntu-latest
+    environment: ${{ needs.determine-environment.outputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Print build environment
+        run: echo "This is the ${{ needs.determine-environment.outputs.environment }} environment"
+      - name: Print gathered version
+        run: echo "The version is ${{ needs.previous-version.outputs.version }}"
+      
+      # create string with format {semverTag}-{date}--{gitShortSha}.{timeStamp}
+      - name: Create Tag
+        run: |
+          TAG=$(echo "${{ needs.previous-version.outputs.version }}-$(date +'%Y-%m-%d')--$(git rev-parse --short HEAD).$(date +'%s')")
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo $TAG
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GA_TOKEN }}
+
+      - name: Build Images
+        run: |
+          if [ "${{ needs.determine-environment.outputs.environment }}" == "latest" ]; then
+            docker build . --tag ghcr.io/bcit-ltc/${{ github.event.repository.name }}:$TAG
+            docker tag ghcr.io/bcit-ltc/${{ github.event.repository.name }}:$TAG ghcr.io/bcit-ltc/${{ github.event.repository.name }}:latest
+
+          elif [ "${{ needs.determine-environment.outputs.environment }}" == "stable" ]; then
+            docker build . --tag ghcr.io/bcit-ltc/${{ github.event.repository.name }}:$TAG
+            docker tag ghcr.io/bcit-ltc/${{ github.event.repository.name }}:$TAG ghcr.io/bcit-ltc/${{ github.event.repository.name }}:latest
+            docker build . --tag ghcr.io/bcit-ltc/${{ github.event.repository.name }}:${{ needs.previous-version.outputs.version }}
+            docker tag ghcr.io/bcit-ltc/${{ github.event.repository.name }}:${{ needs.previous-version.outputs.version }} ghcr.io/bcit-ltc/${{ github.event.repository.name }}:stable
+          elif [ "${{ needs.determine-environment.outputs.environment }}" == "review" ]; then
+            # the tag should be 'review--{branchName}--{commitSha}', not $TAG
+            docker build . --tag ghcr.io/bcit-ltc/${{ github.event.repository.name }}:review--${{ github.ref_name }}--$(git rev-parse --short HEAD)
+          fi
+
+      - name: Push Images
+        run: |
+          if [ "${{ needs.determine-environment.outputs.environment }}" == "latest" ]; then
+            docker push ghcr.io/bcit-ltc/${{ github.event.repository.name }}:$TAG
+            docker push ghcr.io/bcit-ltc/${{ github.event.repository.name }}:latest
+          elif [ "${{ needs.determine-environment.outputs.environment }}" == "stable" ]; then
+            docker push ghcr.io/bcit-ltc/${{ github.event.repository.name }}:$TAG
+            docker push ghcr.io/bcit-ltc/${{ github.event.repository.name }}:latest
+            docker push ghcr.io/bcit-ltc/${{ github.event.repository.name }}:${{ needs.previous-version.outputs.version }}
+            docker push ghcr.io/bcit-ltc/${{ github.event.repository.name }}:stable
+          elif [ "${{ needs.determine-environment.outputs.environment }}" == "review" ]; then
+            docker push ghcr.io/bcit-ltc/${{ github.event.repository.name }}:review--${{ github.ref_name }}--$(git rev-parse --short HEAD)
+          fi
+
+      - name: Set 'stable' APP_VERSION
+        if: ${{ needs.determine-environment.outputs.environment == 'stable' }}
+        env:
+            GH_TOKEN: ${{ secrets.GA_TOKEN }}
+        run: |
+          gh secret set APP_VERSION -b "${{ needs.previous-version.outputs.version }}"
+          echo "APP_VERSION=${{ needs.previous-version.outputs.version }}"
