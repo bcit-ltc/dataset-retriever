@@ -13,5 +13,5 @@ celery -A dataset_retriever worker --beat -l DEBUG -s /home/celerybeat-schedule 
 celery -A dataset_retriever worker --loglevel=DEBUG --concurrency=1 -n worker1@%h --detach worker_hijack_root_logger=False worker_redirect_stdouts=True worker_redirect_stdouts_level=DEBUG
 
 
->&2 echo "Starting dataset_retriever ..."
+>&2 echo "Starting dataset retriever ..."
 exec "$@"
