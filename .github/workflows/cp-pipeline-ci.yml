@@ -8,7 +8,8 @@ on:
 
 permissions:
   contents: read # for checkout
-
+  packages: write # to be able to publish to GitHub Container Registry
+  
 jobs:
         
   semantic-release:
