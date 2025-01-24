@@ -37,26 +37,65 @@ def process_datasets(filtered_objects, object_type):
         datasets.append({'Name': name, 'ExtractsLink': extracts_link})
     return datasets
 
+def save_zip_file(url, headers, remote_path):
+    try:
+        with requests.get(url, headers=headers, stream=True) as r:
+            r.raise_for_status()
+            with open_file(remote_path, mode="wb") as remote_file:
+                for chunk in r.iter_content(chunk_size=8192):
+                    remote_file.write(chunk)
+        loggercelery.info(f"Successfully uploaded to {remote_path}")
+    except requests.exceptions.HTTPError as http_err:
+        if http_err.response.status_code == 403:
+            loggercelery.error(f"Failed to save zip file to {remote_path}: 403 Forbidden - {http_err}")
+            raise Exception(f"403 Forbidden error while saving remote file to {remote_path}")
+        else:
+            loggercelery.error(f"HTTP error occurred: {http_err}")
+            raise
+    except Exception as e:
+        loggercelery.error(f"Failed to save zip file to {remote_path}: {e}")
+        raise
+
+def extract_and_save_csv(zip_path, csv_path):
+    try:
+        with open_file(zip_path, mode="rb") as remote_file:
+            with zipfile.ZipFile(remote_file) as zip_ref:
+                for file_info in zip_ref.infolist():
+                    if file_info.filename.endswith('.csv'):
+                        with zip_ref.open(file_info.filename) as csv_file:
+                            with open_file(csv_path, mode="wb") as remote_csv_file:
+                                copyfileobj(csv_file, remote_csv_file)
+                        loggercelery.info(f"Successfully extracted and uploaded {csv_path}")
+    except Exception as e:
+        loggercelery.error(f"Failed to extract and save CSV from {zip_path} to {csv_path}: {e}")
+
+def remove_file(path):
+    try:
+        remove(path)
+        loggercelery.info(f"Successfully removed: {path}")
+    except PermissionError:
+        loggercelery.error(f"Permission denied: {path}")
+    except FileNotFoundError:
+        loggercelery.error(f"File not found: {path}")
+    except Exception as e:
+        loggercelery.error(f"Error removing file {path}: {e}")
+
 def download_and_extract_files(datasets, headers):
     results = []
     for dataset in datasets:
-        # loggercelery.info(f"Processing {dataset['Name']} from {dataset['ExtractsLink']}")
         try:
             extracts_link_response = requests.get(dataset['ExtractsLink'], headers=headers)
             extracts_link_response.raise_for_status()
             extracts_link_data = extracts_link_response.json()
             for item in extracts_link_data['Objects']:
-                # loggercelery.info(f"Processing item: {item}")
                 results.append({'Name': dataset['Name'], 'BdsType': item['BdsType'], 'CreatedDate': item['CreatedDate'], 'DownloadLink': item['DownloadLink']})
                 if item['BdsType'] == "Full":
-                    # only process the first item for Full datasets
                     break
         except requests.exceptions.RequestException as e:
             loggercelery.error(f"Request to {dataset['ExtractsLink']} failed: {e}")
         except json.JSONDecodeError:
             loggercelery.error(f"Error decoding JSON from the response from {dataset['ExtractsLink']}")
-    # loggercelery.info(f"Results: {results}")
-
+    
     for result in results:
         try:
             loggercelery.info(f"Processing {result['Name']} from {result['DownloadLink']}")
@@ -65,40 +104,14 @@ def download_and_extract_files(datasets, headers):
             csv_file_name = f"{result['Name']}__{date}.csv"
 
             zip_upload_path = os.path.join(settings.NETWORK_DRIVE_PATH, zip_file_name)
+            csv_upload_path = os.path.join(settings.NETWORK_DRIVE_PATH, csv_file_name)
 
-            response = requests.get(result['DownloadLink'], headers=headers, allow_redirects=True)
-            response.raise_for_status()
-            direct_url = response.url
-
-            with requests.get(direct_url, stream=True) as r:
-                r.raise_for_status()
-                with open_file(zip_upload_path, mode="wb") as remote_file:
-                    for chunk in r.iter_content(chunk_size=8192):
-                        remote_file.write(chunk)
-                loggercelery.info(f"Successfully uploaded {zip_file_name} to {zip_upload_path}")
-
-            with open_file(zip_upload_path, mode="rb") as remote_file:
-                with zipfile.ZipFile(remote_file) as zip_ref:
-                    for file_info in zip_ref.infolist():
-                        if file_info.filename.endswith('.csv'):
-                            with zip_ref.open(file_info.filename) as csv_file:
-                                csv_upload_path = os.path.join(settings.NETWORK_DRIVE_PATH, csv_file_name)
-                                with open_file(csv_upload_path, mode="wb") as remote_csv_file:
-                                    copyfileobj(csv_file, remote_csv_file)
-                                loggercelery.info(f"Successfully extracted and uploaded {csv_file_name} to {csv_upload_path}")                              
-
-            try:
-                remove(zip_upload_path)
-                loggercelery.info(f"Successfully removed: {zip_upload_path}")
-            except PermissionError:
-                loggercelery.error(f"Permission denied: {zip_upload_path}")
-            except FileNotFoundError:
-                loggercelery.error(f"File not found: {zip_upload_path}")
-            except Exception as e:
-                loggercelery.error(f"Error removing file {zip_upload_path}: {e}")
-
+            save_zip_file(result['DownloadLink'], headers, zip_upload_path)
+            extract_and_save_csv(zip_upload_path, csv_upload_path)
+            remove_file(zip_upload_path)
         except Exception as e:
             loggercelery.error(f"Failed to process {result['Name']} from {result['DownloadLink']}: {e}")
+
 
 @shared_task(name='task1')
 def retriever(arg, object_type='Full'):

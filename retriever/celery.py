@@ -18,12 +18,12 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    # 'task1-schedule': 
-    # {
-    #     'task': 'task1',
-    #     'schedule': crontab(), # runs every minute
-    #     'args': ([10])
-    # },
+    'task1-schedule': 
+    {
+        'task': 'task1',
+        'schedule': crontab(), # runs every minute
+        'args': ([10])
+    },
     # 'task2-schedule':{
     #     'task': 'task2',
     #     'schedule': crontab(),
