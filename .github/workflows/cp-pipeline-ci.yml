@@ -4,12 +4,12 @@ on:
   push:
     branches:
       - main
-      - '[0-9]+-*'
+      # - '[0-9]+-*'
 
 permissions:
   contents: read # for checkout
   packages: write # to be able to publish to GitHub Container Registry
-  
+
 jobs:
         
   semantic-release:
