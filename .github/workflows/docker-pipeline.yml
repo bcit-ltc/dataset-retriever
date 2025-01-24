@@ -9,7 +9,10 @@ on:
 #   schedule:
 #     - cron: $cron-daily
   push:
-    branches: [ $default-branch ]
+    # branches: [ $default-branch ]
+    branches:
+      - '[0-9]+-*'
+
     # Publish semver tags as releases.
 #     tags: [ 'v*.*.*' ]
 #   pull_request:
