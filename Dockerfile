@@ -1,5 +1,5 @@
 FROM python:3.13.1-slim AS base
-LABEL org.opencontainers.image.source https://github.com/BCIT-LTC/dataset-retriever
+LABEL org.opencontainers.image.source = "https://github.com/BCIT-LTC/dataset-retriever"
 ENV PYTHONUNBUFFERED=1
 ENV PATH=/code:/opt/venv/bin:$PATH
 
@@ -20,6 +20,7 @@ RUN set -ex; \
 # ============================================ Release
 
 FROM python:3.13.1-slim AS release
+LABEL org.opencontainers.image.source = "https://github.com/BCIT-LTC/dataset-retriever"
 ENV PYTHONUNBUFFERED=1
 ENV PATH=/code:/opt/venv/bin:$PATH
 WORKDIR /code
