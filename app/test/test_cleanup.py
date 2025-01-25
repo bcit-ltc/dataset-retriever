@@ -3,6 +3,7 @@ from app.tasks import cleanup
 
 # Create your tests here.
 def test_cleanup():
-    result = cleanup()
+    arg = "some_argument"
+    result = cleanup(arg)
     expected_result = None
     assert result == expected_result
