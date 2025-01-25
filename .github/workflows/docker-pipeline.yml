@@ -73,7 +73,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: ghcr.io/bcit-ltc/${{ github.event.repository.name }}:latest
+          push: true
           tags: |
             ghcr.io/bcit-ltc/${{ github.event.repository.name }}:latest
             ${{ steps.meta.outputs.tags }}
