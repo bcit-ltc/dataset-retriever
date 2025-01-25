@@ -66,6 +66,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
+      - name: Lowercase the repo name and username
+        run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
+
       # Build and push Docker image with Buildx
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
@@ -74,9 +77,9 @@ jobs:
         with:
           context: .
           push: true
-          tags: |
-            ghcr.io/bcit-ltc/${{ github.event.repository.name }}:latest
-            ${{ steps.meta.outputs.tags }}
+          # tags: |
+          #   ghcr.io/bcit-ltc/${{ github.event.repository.name }}:latest
+          tags: ghcr.io/${{ env.REPO }}:${{ github.sha }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
