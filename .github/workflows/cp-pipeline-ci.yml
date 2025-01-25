@@ -12,7 +12,7 @@ permissions:
 jobs:
         
   semantic-release:
-    name: Determine Next Version
+    name: Semantic Release
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.set-next-version.outputs.VERSION_NUM }}
@@ -70,7 +70,7 @@ jobs:
           fi
 
   previous-version:
-    name: Choose Current Version if Next Empty
+    name: Previous Version
     needs: [semantic-release]
     runs-on: ubuntu-latest
     outputs:
@@ -127,7 +127,7 @@ jobs:
         run: echo "The environment is ${{ steps.set-environment.outputs.ENVIRONMENT }}"
 
   build-for-environment:
-    name: Build
+    name: Build for environment
     needs: [previous-version, determine-environment]
     if: ${{ needs.determine-environment.outputs.environment != '' }}
     runs-on: ubuntu-latest
