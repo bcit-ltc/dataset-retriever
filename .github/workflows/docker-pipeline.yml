@@ -33,7 +33,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: ${{ github.event_name != 'pull_request' }}
           tags: |
             ghcr.io/bcit-ltc/${{ github.event.repository.name }}:latest
             ${{ steps.meta.outputs.tags }}
