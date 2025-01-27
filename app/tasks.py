@@ -115,8 +115,13 @@ def download_and_extract_files(datasets, headers):
 
 @shared_task(name='task1')
 def retriever(arg, object_type='Full'):
-    register_network_session()
     loggercelery.info(f"task1 ran arg: {arg}")
+
+    try:
+        register_network_session()
+    except ConnectionError as e:
+        loggercelery.error(f"Failed to connect: {e}")
+        return None
 
     auth_token = "your_auth_token"
 
@@ -137,7 +142,6 @@ def retriever(arg, object_type='Full'):
     if object_type == "Differential":
         filter_names = [name + " Differential" for name in filter_names]
     
-    # Use filter_names in your code
     filtered_objects = filter_objects(datahub_data, filter_names, object_type)
     if not filtered_objects:
         return None
