@@ -9,7 +9,7 @@ class TaskRunnerConfig(AppConfig):
 
     def ready(self):
 
-        logger.info("started APP")
+        logger.info("started taskrunner app")
 
         # from django.contrib.auth.models import User        
         # if not User.objects.filter(username="admin").exists():

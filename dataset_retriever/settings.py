@@ -18,8 +18,9 @@ OAUTH2_PROVIDER_TOKEN_URL = os.getenv('OAUTH2_PROVIDER_TOKEN_URL')
 OAUTH2_CLIENT_ID = os.getenv('OAUTH2_CLIENT_ID')
 OAUTH2_CLIENT_SECRET = os.getenv('OAUTH2_CLIENT_SECRET')
 OAUTH2_REDIRECT_URI = os.getenv('OAUTH2_REDIRECT_URI')
-# OAUTH2_SCOPE = os.getenv('OAUTH2_SCOPE')
-OAUTH2_SCOPE = ['datahub:dataexports:download,read', 'datasets:bds:read', 'reporting:dataset:fetch,list', 'reporting:job:create,download,fetch,list']
+OAUTH2_SCOPE = os.getenv('OAUTH2_SCOPE')
+OAUTH2_SCOPE = "test"
+# OAUTH2_SCOPE = "['datahub:dataexports:download,read', 'datasets:bds:read', 'reporting:dataset:fetch,list', 'reporting:job:create,download,fetch,list']"
 
 # SMB related environment variables
 NETWORK_DRIVE_USERNAME = os.getenv('NETWORK_DRIVE_USERNAME')
@@ -57,7 +58,8 @@ INSTALLED_APPS = [
 
     'django_celery_beat',
 
-    'task_runner'
+    'task_runner',
+    'oauth_connector'
 ]
 
 MIDDLEWARE = [
@@ -199,7 +201,12 @@ LOGGING = {
             "level": "ERROR",
             "propagate": True,
         },
-        "tasks-runner": {
+        "task_runner": {
+            "handlers": ["console","file_log"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        "oauth_connector": {
             "handlers": ["console","file_log"],
             "level": "INFO",
             "propagate": True,
