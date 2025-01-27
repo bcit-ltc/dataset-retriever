@@ -58,7 +58,7 @@ INSTALLED_APPS = [
 
     'django_celery_beat',
 
-    'task_runner',
+    'task_functions',
     'oauth_connector'
 ]
 
@@ -201,7 +201,7 @@ LOGGING = {
             "level": "ERROR",
             "propagate": True,
         },
-        "task_runner": {
+        "task_functions": {
             "handlers": ["console","file_log"],
             "level": "INFO",
             "propagate": True,

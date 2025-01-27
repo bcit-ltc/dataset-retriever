@@ -33,7 +33,7 @@ COPY --from=base /opt/venv /opt/venv
 COPY manage.py ./
 COPY docker-entrypoint.sh /usr/local/bin
 COPY dataset_retriever dataset_retriever
-COPY task_runner task_runner
+COPY task_functions task_functions
 COPY oauth_connector oauth_connector
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
