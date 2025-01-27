@@ -27,21 +27,12 @@ ARG VERSION
 ENV VERSION=${VERSION:-1.0.0}
 RUN echo $VERSION > .env
 
-# RUN set -ex; \
-#         apt-get update; \
-#         apt-get install -y --no-install-recommends \
-#             ffmpeg \
-#             curl \ 
-#             gpg;
-
-
-
 COPY --from=base /root/.cache /root/.cache
 COPY --from=base /opt/venv /opt/venv
 
 COPY manage.py ./
 COPY docker-entrypoint.sh /usr/local/bin
-COPY retriever retriever
+COPY dataset-retriever dataset-retriever
 COPY app app
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
@@ -53,4 +44,4 @@ EXPOSE 9000
 # CMD ["tail", "-f", "/dev/null"]
 
 CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:9000", "--forwarded-allow-ips=*", \
-"--log-level", "info", "--timeout", "120", "--graceful-timeout", "120", "retriever.wsgi"]
+"--log-level", "info", "--timeout", "120", "--graceful-timeout", "120", "dataset-retriever.wsgi"]
