@@ -11,7 +11,16 @@ from smbclient.shutil import copyfileobj
 loggercelery = get_task_logger(__name__)
 
 def register_network_session():
-    register_session(settings.NETWORK_DRIVE_SERVER, username=settings.NETWORK_DRIVE_USERNAME, password=settings.NETWORK_DRIVE_PASSWORD)
+    try:
+        # loggercelery.info(f"Registering session with server: {settings.NETWORK_DRIVE_SERVER}, username: {settings.NETWORK_DRIVE_USERNAME}")
+        register_session(
+            settings.NETWORK_DRIVE_SERVER,
+            username=settings.NETWORK_DRIVE_USERNAME,
+            password=settings.NETWORK_DRIVE_PASSWORD
+        )
+    except ConnectionError as e:
+        loggercelery.error(f"Failed to connect: {e}")
+        return None
 
 def fetch_datahub_data(headers):
     try:
@@ -117,11 +126,7 @@ def download_and_extract_files(datasets, headers):
 def retriever(arg, object_type='Full'):
     loggercelery.info(f"task1 ran arg: {arg}")
 
-    try:
-        register_network_session()
-    except ConnectionError as e:
-        loggercelery.error(f"Failed to connect: {e}")
-        return None
+    register_network_session()
 
     auth_token = "your_auth_token"
 
