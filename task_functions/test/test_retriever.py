@@ -1,14 +1,14 @@
 from django.test import TestCase
 from unittest.mock import patch
-from app.tasks import retriever
+from task_functions.tasks import retriever
 
 class RetrieverTestCase(TestCase):
 
-    @patch('app.tasks.register_network_session')
-    @patch('app.tasks.fetch_datahub_data')
-    @patch('app.tasks.filter_objects')
-    @patch('app.tasks.process_datasets')
-    @patch('app.tasks.download_and_extract_files')
+    @patch('task_functions.tasks.register_network_session')
+    @patch('task_functions.tasks.fetch_datahub_data')
+    @patch('task_functions.tasks.filter_objects')
+    @patch('task_functions.tasks.process_datasets')
+    @patch('task_functions.tasks.download_and_extract_files')
     def test_retriever_success(self, mock_download_and_extract_files, mock_process_datasets, mock_filter_objects, mock_fetch_datahub_data, mock_register_network_session):
         # Mock the return values
         mock_register_network_session.return_value = None
@@ -28,7 +28,7 @@ class RetrieverTestCase(TestCase):
         mock_process_datasets.assert_called_once()
         mock_download_and_extract_files.assert_called_once()
 
-    @patch('app.tasks.register_network_session')
+    @patch('task_functions.tasks.register_network_session')
     def test_retriever_connection_error(self, mock_register_network_session):
         # Mock the return value to raise a ConnectionError
         mock_register_network_session.side_effect = ConnectionError("Failed to connect")
@@ -40,8 +40,8 @@ class RetrieverTestCase(TestCase):
         self.assertIsNone(result)
         mock_register_network_session.assert_called_once()
 
-    @patch('app.tasks.register_network_session')
-    @patch('app.tasks.fetch_datahub_data')
+    @patch('task_functions.tasks.register_network_session')
+    @patch('task_functions.tasks.fetch_datahub_data')
     def test_retriever_fetch_datahub_data_failure(self, mock_fetch_datahub_data, mock_register_network_session):
         # Mock the return values
         mock_register_network_session.return_value = None
