@@ -24,9 +24,9 @@ jobs:
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)/app" >> $GITHUB_ENV
+      run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)/task_functions" >> $GITHUB_ENV
     - name: Set DJANGO_SETTINGS_MODULE
-      run: echo "DJANGO_SETTINGS_MODULE=retriever.settings" >> $GITHUB_ENV
+      run: echo "DJANGO_SETTINGS_MODULE=dataset_retriever.settings" >> $GITHUB_ENV
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
