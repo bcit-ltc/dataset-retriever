@@ -52,18 +52,16 @@ class OAuth2LoginView(View):
     """
 
     def get(self, request):
-        logger.info("HELLOOOOOOOOOO")
         authorization_url = settings.OAUTH2_PROVIDER_AUTHORIZATION_URL
-        logger.info(f"authorization_url: {settings.OAUTH2_PROVIDER_AUTHORIZATION_URL}")
-        # client_id = settings.OAUTH2_CLIENT_ID
-        # redirect_uri = settings.OAUTH2_REDIRECT_URI
-        # scope = settings.OAUTH2_SCOPE
+        client_id = settings.OAUTH2_CLIENT_ID
+        redirect_uri = settings.OAUTH2_REDIRECT_URI
+        scope = settings.OAUTH2_SCOPE
 
-        # # Build the authorization URL
-        # auth_url = (
-        #     f"{authorization_url}?response_type=code&client_id={client_id}"
-        #     f"&redirect_uri={redirect_uri}&scope={' '.join(scope)}"
-        # )
+        # Build the authorization URL
+        auth_url = (
+            f"{authorization_url}?response_type=code&client_id={client_id}"
+            f"&redirect_uri={redirect_uri}&scope={' '.join(scope)}"
+        )
 
-        # return redirect(auth_url)
-        return JsonResponse({'message': 'Hello, World!'})
+        return redirect(auth_url)
+        # return JsonResponse({'message': 'Hello, World!'})
