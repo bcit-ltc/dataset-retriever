@@ -4,7 +4,8 @@ from django.http import JsonResponse
 from django.views import View
 from django.shortcuts import redirect
 from django.conf import settings
-
+import logging
+logger = logging.getLogger(__name__)
 
 class OAuth2CallbackView(View):
     """
@@ -63,3 +64,4 @@ class OAuth2LoginView(View):
         )
 
         return redirect(auth_url)
+        # return JsonResponse({'message': 'Hello, World!'})

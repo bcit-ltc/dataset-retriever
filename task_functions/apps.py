@@ -3,13 +3,13 @@ from django.conf import settings
 import logging
 logger = logging.getLogger(__name__)
 
-class AppConfig(AppConfig):
+class TaskFunctionsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'app'
+    name = 'task_functions'
 
     def ready(self):
 
-        logger.info("started APP")
+        logger.info("started task_functions")
 
         # from django.contrib.auth.models import User        
         # if not User.objects.filter(username="admin").exists():

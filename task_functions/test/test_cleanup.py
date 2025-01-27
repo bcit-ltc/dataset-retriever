@@ -1,5 +1,5 @@
 from django.test import TestCase
-from app.tasks import cleanup
+from tasks-runner.tasks import cleanup
 
 # Create your tests here.
 def test_cleanup():

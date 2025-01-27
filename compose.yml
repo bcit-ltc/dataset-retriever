@@ -1,7 +1,7 @@
 services:
 
   app:
-    image: retrieverbase
+    image: dataset_retriever
     command:
       - /bin/sh
       - -c
@@ -12,12 +12,12 @@ services:
       args:
         - VERSION=1.0.0
     environment:
-      - OAUTH2_PROVIDER_AUTHORIZATION_URL = 'https://provider.com/oauth2/authorize'
-      - OAUTH2_PROVIDER_TOKEN_URL = 'https://provider.com/oauth2/token'
-      - OAUTH2_CLIENT_ID = 'your-client-id'
-      - OAUTH2_CLIENT_SECRET = 'your-client-secret'
-      - OAUTH2_REDIRECT_URI = 'https://yourdomain.com/oauth2/callback'
-      - OAUTH2_SCOPE = ['scope1', 'scope2']
+      - OAUTH2_PROVIDER_AUTHORIZATION_URL=https://provider.com/oauth2/authorize
+      - OAUTH2_PROVIDER_TOKEN_URL=https://provider.com/oauth2/token
+      - OAUTH2_CLIENT_ID=your-client-id
+      - OAUTH2_CLIENT_SECRET=your-client-secret
+      - OAUTH2_REDIRECT_URI=https://yourdomain.com/oauth2/callback
+      - OAUTH2_SCOPE=['scope1', 'scope2']
       - USERNAME=admin@test.com
       - PASSWORD=securepassword
       - SMB_SERVER=site.test.com
