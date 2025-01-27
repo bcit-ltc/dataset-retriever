@@ -1,5 +1,5 @@
 """
-URL configuration for dataset-retriever project.
+URL configuration for dataset_retriever project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.1/topics/http/urls/
@@ -17,11 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 # from oauth2_provider import urls as oauth2_urls
-from app import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('app/', include('app.urls')),
+    path('app/', include('task_runner.urls')),
     # path("o/", include(oauth2_urls)),
     # path("accounts/", include("django.contrib.auth.urls")),
 ]

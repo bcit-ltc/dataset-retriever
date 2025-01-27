@@ -32,8 +32,8 @@ COPY --from=base /opt/venv /opt/venv
 
 COPY manage.py ./
 COPY docker-entrypoint.sh /usr/local/bin
-COPY dataset-retriever dataset-retriever
-COPY app app
+COPY dataset_retriever dataset_retriever
+COPY task_runner task_runner
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
@@ -44,4 +44,4 @@ EXPOSE 9000
 # CMD ["tail", "-f", "/dev/null"]
 
 CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:9000", "--forwarded-allow-ips=*", \
-"--log-level", "info", "--timeout", "120", "--graceful-timeout", "120", "dataset-retriever.wsgi"]
+"--log-level", "info", "--timeout", "120", "--graceful-timeout", "120", "dataset_retriever.wsgi"]

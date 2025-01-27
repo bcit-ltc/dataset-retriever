@@ -1,7 +1,7 @@
 services:
 
   app:
-    image: dataset-retriever
+    image: dataset_retriever
     command:
       - /bin/sh
       - -c

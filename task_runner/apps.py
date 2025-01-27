@@ -3,9 +3,9 @@ from django.conf import settings
 import logging
 logger = logging.getLogger(__name__)
 
-class AppConfig(AppConfig):
+class TaskRunnerConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'app'
+    name = 'task_runner'
 
     def ready(self):
 
