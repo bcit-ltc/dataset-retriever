@@ -115,6 +115,7 @@ def download_and_extract_files(datasets, headers):
 
 @shared_task(name='task1')
 def retriever(arg, object_type='Full'):
+    return None
     register_network_session()
     loggercelery.info(f"task1 ran arg: {arg}")
 
