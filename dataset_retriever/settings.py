@@ -22,6 +22,8 @@ OAUTH2_SCOPE = os.getenv('OAUTH2_SCOPE')
 OAUTH2_SCOPE = "test"
 # OAUTH2_SCOPE = "['datahub:dataexports:download,read', 'datasets:bds:read', 'reporting:dataset:fetch,list', 'reporting:job:create,download,fetch,list']"
 
+# Brightspace related environment variables
+BDS_API_URL = os.getenv('BDS_API_URL')
 # SMB related environment variables
 NETWORK_DRIVE_USERNAME = os.getenv('NETWORK_DRIVE_USERNAME')
 NETWORK_DRIVE_PASSWORD = os.getenv('NETWORK_DRIVE_PASSWORD')
@@ -218,6 +220,3 @@ LOGGING = {
         }
     },
 }
-
-
-
