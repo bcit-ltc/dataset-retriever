@@ -115,7 +115,6 @@ def download_and_extract_files(datasets, headers):
 
 @shared_task(name='task1')
 def retriever(arg, object_type='Full'):
-    return None
     register_network_session()
     loggercelery.info(f"task1 ran arg: {arg}")
 
@@ -124,11 +123,11 @@ def retriever(arg, object_type='Full'):
     headers = {
         'Authorization': f'Bearer {auth_token}'
     }
-
+    
     datahub_data = fetch_datahub_data(headers)
     if not datahub_data:
         return None
-
+    
     filter_names = [
         "Role Details",
         "Users",
@@ -137,10 +136,16 @@ def retriever(arg, object_type='Full'):
     ]
     if object_type == "Differential":
         filter_names = [name + " Differential" for name in filter_names]
-
+    
     # Use filter_names in your code
     filtered_objects = filter_objects(datahub_data, filter_names, object_type)
+    if not filtered_objects:
+        return None
+    
     datasets = process_datasets(filtered_objects, object_type)
+    if not datasets:
+        return None
+    
     download_and_extract_files(datasets, headers)
-
+    
     return None

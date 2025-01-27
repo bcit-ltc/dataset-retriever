@@ -1,8 +1,8 @@
 name: Testing
 
 on:
-    push:
-        branches: [ "**" ]
+  push:
+      branches: [ "**" ]
 
 permissions:
   contents: read
