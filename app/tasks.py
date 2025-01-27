@@ -20,7 +20,7 @@ def register_network_session():
         )
     except ConnectionError as e:
         loggercelery.error(f"Failed to connect: {e}")
-        return None
+        raise
 
 def fetch_datahub_data(headers):
     try:
@@ -126,7 +126,11 @@ def download_and_extract_files(datasets, headers):
 def retriever(arg, object_type='Full'):
     loggercelery.info(f"task1 ran arg: {arg}")
 
-    register_network_session()
+    try:
+        register_network_session()
+    except ConnectionError as e:
+        loggercelery.error(f"Failed to connect: {e}")
+        return None
 
     auth_token = "your_auth_token"
 
