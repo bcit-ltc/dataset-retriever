@@ -1,9 +1,10 @@
 from django.shortcuts import render
 import requests
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views import View
 from django.shortcuts import redirect
 from django.conf import settings
+import os
 import logging
 logger = logging.getLogger(__name__)
 
@@ -39,7 +40,10 @@ class OAuth2CallbackView(View):
             response_data = response.json()
 
             if response.status_code == 200:
-                return JsonResponse(response_data)
+                os.environ['ACCESS_TOKEN'] = response_data['access_token']
+                os.environ['REFRESH_TOKEN'] = response_data['refresh_token']
+                # return JsonResponse(response_data)
+                return redirect('/')
             else:
                 return JsonResponse({'error': response_data}, status=response.status_code)
         except requests.RequestException as e:
@@ -57,11 +61,12 @@ class OAuth2LoginView(View):
         redirect_uri = settings.OAUTH2_REDIRECT_URI
         scope = settings.OAUTH2_SCOPE
 
+        if os.environ['REFRESH_TOKEN']:
+            return HttpResponse('You are already logged in')
+
         # Build the authorization URL
         auth_url = (
             f"{authorization_url}?response_type=code&client_id={client_id}"
             f"&redirect_uri={redirect_uri}&scope={' '.join(scope)}"
         )
-
         return redirect(auth_url)
-        # return JsonResponse({'message': 'Hello, World!'})
