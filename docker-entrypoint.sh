@@ -8,6 +8,9 @@ set -e
 python manage.py makemigrations
 python manage.py migrate
 
+>&2 echo "Starting redis ..."
+redis-server --daemonize yes
+
 >&2 echo "Start Celery workers"
 celery -A dataset_retriever worker --beat -l DEBUG -s /home/celerybeat-schedule --detach worker_hijack_root_logger=False worker_redirect_stdouts=True worker_redirect_stdouts_level=DEBUG
 celery -A dataset_retriever worker --loglevel=DEBUG --concurrency=1 -n worker1@%h --detach worker_hijack_root_logger=False worker_redirect_stdouts=True worker_redirect_stdouts_level=DEBUG
