@@ -27,6 +27,11 @@ ARG VERSION
 ENV VERSION=${VERSION:-1.0.0}
 RUN echo $VERSION > .env
 
+RUN set -ex; \
+        apt-get update; \
+        apt-get install -y --no-install-recommends \
+                redis-server;
+
 COPY --from=base /root/.cache /root/.cache
 COPY --from=base /opt/venv /opt/venv
 
