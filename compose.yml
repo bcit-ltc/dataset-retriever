@@ -12,6 +12,7 @@ services:
       args:
         - VERSION=1.0.0
     environment:
+      - DEBUG=False
       - OAUTH2_PROVIDER_AUTHORIZATION_URL=https://provider.com/oauth2/authorize
       - OAUTH2_PROVIDER_TOKEN_URL=https://provider.com/oauth2/token
       - OAUTH2_CLIENT_ID=your-client-id
