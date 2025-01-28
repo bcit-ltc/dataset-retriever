@@ -132,11 +132,11 @@ def retriever(arg, object_type='Full'):
     except ConnectionError as e:
         loggercelery.error(f"Failed to connect: {e}")
         return None
-
-    auth_token = "your_auth_token"
+    
+    access_token = cache.get('ACCESS_TOKEN')
 
     headers = {
-        'Authorization': f'Bearer {auth_token}'
+        'Authorization': f'Bearer {access_token}'
     }
     
     datahub_data = fetch_datahub_data(headers)
