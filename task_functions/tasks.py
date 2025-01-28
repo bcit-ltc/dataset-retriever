@@ -7,6 +7,7 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from smbclient import open_file, register_session, stat, remove
 from smbclient.shutil import copyfileobj
+from django.core.cache import cache
 
 loggercelery = get_task_logger(__name__)
 

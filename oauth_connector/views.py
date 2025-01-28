@@ -4,7 +4,7 @@ from django.http import JsonResponse, HttpResponse
 from django.views import View
 from django.shortcuts import redirect
 from django.conf import settings
-import os
+from django.core.cache import cache
 import logging
 logger = logging.getLogger(__name__)
 
@@ -40,8 +40,8 @@ class OAuth2CallbackView(View):
             response_data = response.json()
 
             if response.status_code == 200:
-                os.environ['ACCESS_TOKEN'] = response_data['access_token']
-                os.environ['REFRESH_TOKEN'] = response_data['refresh_token']
+                cache.set('ACCESS_TOKEN', response_data['access_token'])
+                cache.set('REFRESH_TOKEN', response_data['refresh_token'])
                 # return JsonResponse(response_data)
                 return redirect('/')
             else:

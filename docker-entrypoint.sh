@@ -9,7 +9,7 @@ python manage.py makemigrations
 python manage.py migrate
 
 >&2 echo "Starting redis ..."
-redis-server --daemonize yes
+redis-server --daemonize yes --dbfilename redis-dump.rdb --dir /redis-data
 
 >&2 echo "Start Celery workers"
 celery -A dataset_retriever worker --beat -l DEBUG -s /home/celerybeat-schedule --detach worker_hijack_root_logger=False worker_redirect_stdouts=True worker_redirect_stdouts_level=DEBUG

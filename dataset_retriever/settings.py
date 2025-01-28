@@ -155,6 +155,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CELERY_CACHE_BACKEND = 'memory'
 # CELERYD_TIME_LIMIT=1800
 
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": [
+            "redis://localhost:6379",
+        ],
+    }
+}
+
 CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 CELERYD_TIME_LIMIT=1800
