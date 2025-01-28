@@ -8,7 +8,9 @@ set -e
 python manage.py makemigrations
 python manage.py migrate
 
+
 >&2 echo "Starting redis ..."
+mkdir -p /redis-data
 redis-server --daemonize yes --dbfilename redis-dump.rdb --dir /redis-data
 
 >&2 echo "Start Celery workers"
