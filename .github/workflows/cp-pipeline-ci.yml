@@ -108,7 +108,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Get commit message
         id: get-commit-message
-        run: echo "COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+        run: echo "COMMIT_MESSAGE=$(git log -1 --pretty=%B | tr -d '\n' | sed 's/"/\\"/g')" >> $GITHUB_ENV
       - name: Set the environment
         id: set-environment
         run: |
