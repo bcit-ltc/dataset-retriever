@@ -4,7 +4,7 @@ from .views import OAuth2LoginView, OAuth2CallbackView
 from django.http import HttpResponse
 
 urlpatterns = [
-    path('callback/', OAuth2CallbackView.as_view(), name='callback'),
-    path('login/', OAuth2LoginView.as_view(), name='login'),
-    path('test/', lambda request: HttpResponse('This is a test'), name='test'),
+    path('auth/callback/', OAuth2CallbackView.as_view(), name='callback'),
+    path('auth/login/', OAuth2LoginView.as_view(), name='login'),
+    path('', lambda request: HttpResponse('dataset-retriever'), name='home'), #landing page
 ]
