@@ -61,12 +61,17 @@ class OAuth2LoginView(View):
         redirect_uri = settings.OAUTH2_REDIRECT_URI
         scope = settings.OAUTH2_SCOPE
 
-        if os.environ['REFRESH_TOKEN']:
-            return HttpResponse('You are already logged in')
-
         # Build the authorization URL
         auth_url = (
             f"{authorization_url}?response_type=code&client_id={client_id}"
-            f"&redirect_uri={redirect_uri}&scope={' '.join(scope)}"
-        )
-        return redirect(auth_url)
+            f"&redirect_uri={redirect_uri}&scope={' '.join(scope)}")
+        try:
+            if os.environ['ACCESS_TOKEN']:
+                return HttpResponse('You are already logged in')
+            else:
+                return redirect(auth_url)
+        except KeyError:
+            return redirect(auth_url)
+
+
+        
