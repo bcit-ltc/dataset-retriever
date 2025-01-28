@@ -10,10 +10,3 @@ class TaskFunctionsConfig(AppConfig):
     def ready(self):
 
         logger.info("started task_functions")
-
-        # from django.contrib.auth.models import User        
-        # if not User.objects.filter(username="admin").exists():
-        #     User.objects.create_superuser(
-        #         "admin", "admin@example.com", "password"
-        #     )
-        #     logger.info("ADMIN user created")
