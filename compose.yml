@@ -62,7 +62,7 @@ services:
 
 
   # Redis Service
-  redis:
-    image: redis:alpine
-    healthcheck:
-      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+  # redis:
+  #   image: redis:alpine
+  #   healthcheck:
+  #     test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
