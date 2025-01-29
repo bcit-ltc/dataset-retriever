@@ -6,6 +6,7 @@ from django.shortcuts import redirect
 from django.conf import settings
 from django.core.cache import cache
 import logging
+import urllib
 logger = logging.getLogger(__name__)
 
 class OAuth2CallbackView(View):
@@ -61,11 +62,11 @@ class OAuth2LoginView(View):
         client_id = settings.OAUTH2_CLIENT_ID
         redirect_uri = settings.OAUTH2_REDIRECT_URI
         scope = settings.OAUTH2_SCOPE
-
+        encoded_scope = urllib.parse.quote(scope)
         # Build the authorization URL
         auth_url = (
             f"{authorization_url}?response_type=code&client_id={client_id}"
-            f"&redirect_uri={redirect_uri}&scope={' '.join(scope)}")
+            f"&redirect_uri={redirect_uri}&scope={encoded_scope}")
         try:
             if cache.get('ACCESS_TOKEN'):
                 return HttpResponse('You are already logged in')
