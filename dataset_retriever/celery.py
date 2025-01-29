@@ -24,19 +24,6 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 #     logger = logging.getLogger('celery.task')
 #     logger.info('Celery logging configured')
 
-# @setup_logging.connect
-# def configure_logging(loglevel, logfile, format, colorize, **kwargs):
-#     handler = logging.StreamHandler()  # Logs to stdout
-#     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-#     handler.setFormatter(formatter)
-#     logging.getLogger().addHandler(handler)
-#     logging.getLogger().setLevel(loglevel)
-#     logger = logging.getLogger('celery.task')
-#     logger.setLevel(loglevel)
-#     logger.addHandler(handler)
-#     logger.propagate = True
-#     logger.info('Celery logging configured')
-
 # Load task modules from all registered Django apps.
 app.autodiscover_tasks()
 
@@ -44,8 +31,8 @@ app.conf.beat_schedule = {
     'task1-schedule': 
     {
         'task': 'task1',
-        # 'schedule': crontab(minute='*/5'), # runs every 5 minutes
-        'schedule': crontab(), # runs every minute
+        'schedule': crontab(minute='*/5'), # runs every 5 minutes
+        # 'schedule': crontab(), # runs every minute
         'args': ([10])
     },
     # 'task2-schedule':{
