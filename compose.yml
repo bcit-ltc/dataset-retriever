@@ -9,10 +9,8 @@ services:
         python manage.py runserver 0.0.0.0:9000
     build:
       context: .
-      args:
-        - VERSION=1.0.0
     environment:
-      - DEBUG=False
+      - DEBUG=True
       - OAUTH2_PROVIDER_AUTHORIZATION_URL=https://provider.com/oauth2/authorize
       - OAUTH2_PROVIDER_TOKEN_URL=https://provider.com/oauth2/token
       - OAUTH2_CLIENT_ID=your-client-id
@@ -43,23 +41,21 @@ services:
 
   # Celery Service
   # celery:
-  #   image: retrieverbase
+  #   image: dataset_retriever
   #   build:
   #     context: .
-  #     args:
-  #       - VERSION=1.0.0
   #   command:
   #     - /bin/sh
   #     - -c
   #     - |
-  #       /opt/venv/bin/celery -A retriever worker --beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
-  #       /opt/venv/bin/celery -A retriever worker --loglevel=INFO --concurrency=1 -n worker1@%h
+  #       /opt/venv/bin/celery -A dataset_retriever worker --beat --loglevel=INFO --scheduler=django_celery_beat.schedulers:DatabaseScheduler worker_hijack_root_logger=False worker_redirect_stdouts=True
+  #       /opt/venv/bin/celery -A dataset_retriever worker --loglevel=INFO --concurrency=1 -n worker1@%h worker_hijack_root_logger=False worker_redirect_stdouts=True
   #   working_dir: /code
-    # healthcheck:
-    #   test: /opt/venv/bin/celery -A retrieverbase inspect ping worker1@%h
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
+  #   healthcheck:
+  #     test: /opt/venv/bin/celery -A dataset_retriever inspect ping worker1@%h
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
 
 
   # Redis Service

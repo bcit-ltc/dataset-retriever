@@ -8,6 +8,8 @@ from celery.utils.log import get_task_logger
 from smbclient import open_file, register_session, stat, remove
 from smbclient.shutil import copyfileobj
 from django.core.cache import cache
+import logging
+logger = logging.getLogger(__name__)
 
 loggercelery = get_task_logger(__name__)
 

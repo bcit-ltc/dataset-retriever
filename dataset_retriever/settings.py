@@ -103,8 +103,9 @@ WSGI_APPLICATION = 'dataset_retriever.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
+        # 'NAME': ':memory:',
         # 'NAME': BASE_DIR / "db.sqlite3",
+        'NAME': "/db.sqlite3",
     }
 }
 
@@ -164,9 +165,17 @@ CACHES = {
     }
 }
 
+CELERY_APP='dataset_retriever'
+CELERY_BIN='/opt/venv/bin/celery'
+CELERYD_LOG_LEVEL='DEBUG'
+# Extra command-line arguments to the worker
+# CELERYD_OPTS="--time-limit=300 --concurrency=2"
+# CELERYBEAT_OPTS="--scheduler=django_celery_beat.schedulers.DatabaseScheduler"
+# CELERYBEAT_SCHEDULER='django_celery_beat.schedulers:DatabaseScheduler'
 CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
-CELERYD_TIME_LIMIT=1800
+# CELERYD_TIME_LIMIT=1800
+# CELERYD_HIJACK_ROOT_LOGGER = False
 
 LOGGING = {
     "version": 1,
@@ -195,6 +204,7 @@ LOGGING = {
             "level": "INFO",
             "class": "logging.StreamHandler",
             "formatter": "custom",
+            # "filters": ['require_debug_true'],
         },
         "file_log": {
             "level": "DEBUG",
@@ -202,7 +212,7 @@ LOGGING = {
             "filename": "dev.log",
             "formatter": "custom",
             "maxBytes": 1024 * 1024 * 10,  # 10 MB
-            "filters": ['require_debug_true']
+            # "filters": ['require_debug_true']
         },
     },
     "loggers": {
@@ -212,12 +222,12 @@ LOGGING = {
             "propagate": True,
         },
         "task_functions": {
-            "handlers": ["console","file_log"],
+            "handlers": ["console"],
             "level": "INFO",
             "propagate": True,
         },
         "oauth_connector": {
-            "handlers": ["console","file_log"],
+            "handlers": ["console"],
             "level": "INFO",
             "propagate": True,
         },
@@ -225,6 +235,11 @@ LOGGING = {
             "handlers": ["console","file_log"],
             "level": "DEBUG",
             "propagate": True,
-        }
+        },
+        "celery": {
+            "handlers": ["console","file_log"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
     },
 }
