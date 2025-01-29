@@ -8,4 +8,4 @@ class OauthConnectorConfig(AppConfig):
 
     def ready(self):
 
-        logger.info("started oauth_connector app")
+        logger.info("started oauth_connector")

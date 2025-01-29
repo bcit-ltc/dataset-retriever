@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 from pathlib import Path
 import os
+import sys
 
 # OAUTH related environment variables
 OAUTH2_PROVIDER_AUTHORIZATION_URL = os.getenv('OAUTH2_PROVIDER_AUTHORIZATION_URL')
@@ -19,8 +20,7 @@ OAUTH2_CLIENT_ID = os.getenv('OAUTH2_CLIENT_ID')
 OAUTH2_CLIENT_SECRET = os.getenv('OAUTH2_CLIENT_SECRET')
 OAUTH2_REDIRECT_URI = os.getenv('OAUTH2_REDIRECT_URI')
 OAUTH2_SCOPE = os.getenv('OAUTH2_SCOPE')
-OAUTH2_SCOPE = "test"
-# OAUTH2_SCOPE = "['datahub:dataexports:download,read', 'datasets:bds:read', 'reporting:dataset:fetch,list', 'reporting:job:create,download,fetch,list']"
+# OAUTH2_SCOPE = "datahub:dataexports:download,read datasets:bds:read reporting:dataset:fetch,list reporting:job:create,download,fetch,list"
 
 # Brightspace related environment variables
 BDS_API_URL = os.getenv('BDS_API_URL')
@@ -41,7 +41,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-s4&hznh9bz3y7&8&la$hawthpphvsc88au0&f*f_++8m^w0@n3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['*', 'dataset-retriever.ltc.bcit.ca', 'localhost']
 
@@ -104,11 +104,17 @@ WSGI_APPLICATION = 'dataset_retriever.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
+        # 'NAME': ':memory:',
         # 'NAME': BASE_DIR / "db.sqlite3",
+        'NAME': "/db.sqlite3",
     }
 }
 
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': ':memory:',
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -156,9 +162,26 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CELERY_CACHE_BACKEND = 'memory'
 # CELERYD_TIME_LIMIT=1800
 
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": [
+            "redis://localhost:6379",
+        ],
+    }
+}
+
+CELERY_APP='dataset_retriever'
+CELERY_BIN='/opt/venv/bin/celery'
+CELERYD_LOG_LEVEL='DEBUG'
+# Extra command-line arguments to the worker
+# CELERYD_OPTS="--time-limit=300 --concurrency=2"
+# CELERYBEAT_OPTS="--scheduler=django_celery_beat.schedulers.DatabaseScheduler"
+# CELERYBEAT_SCHEDULER='django_celery_beat.schedulers:DatabaseScheduler'
 CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
-CELERYD_TIME_LIMIT=1800
+# CELERYD_TIME_LIMIT=1800
+# CELERYD_HIJACK_ROOT_LOGGER = False
 
 LOGGING = {
     "version": 1,
@@ -187,6 +210,7 @@ LOGGING = {
             "level": "INFO",
             "class": "logging.StreamHandler",
             "formatter": "custom",
+            # "filters": ['require_debug_true'],
         },
         "file_log": {
             "level": "DEBUG",
@@ -194,7 +218,7 @@ LOGGING = {
             "filename": "dev.log",
             "formatter": "custom",
             "maxBytes": 1024 * 1024 * 10,  # 10 MB
-            "filters": ['require_debug_true']
+            # "filters": ['require_debug_true']
         },
     },
     "loggers": {
@@ -204,12 +228,12 @@ LOGGING = {
             "propagate": True,
         },
         "task_functions": {
-            "handlers": ["console","file_log"],
+            "handlers": ["console"],
             "level": "INFO",
             "propagate": True,
         },
         "oauth_connector": {
-            "handlers": ["console","file_log"],
+            "handlers": ["console"],
             "level": "INFO",
             "propagate": True,
         },
@@ -217,6 +241,11 @@ LOGGING = {
             "handlers": ["console","file_log"],
             "level": "DEBUG",
             "propagate": True,
-        }
+        },
+        "celery": {
+            "handlers": ["console","file_log"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
     },
 }

@@ -1,9 +1,10 @@
 from django.shortcuts import render
 import requests
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views import View
 from django.shortcuts import redirect
 from django.conf import settings
+from django.core.cache import cache
 import logging
 logger = logging.getLogger(__name__)
 
@@ -39,7 +40,10 @@ class OAuth2CallbackView(View):
             response_data = response.json()
 
             if response.status_code == 200:
-                return JsonResponse(response_data)
+                cache.set('ACCESS_TOKEN', response_data['access_token'])
+                cache.set('REFRESH_TOKEN', response_data['refresh_token'])
+                # return JsonResponse(response_data)
+                return redirect('/')
             else:
                 return JsonResponse({'error': response_data}, status=response.status_code)
         except requests.RequestException as e:
@@ -52,6 +56,7 @@ class OAuth2LoginView(View):
     """
 
     def get(self, request):
+        logger.info('OAuth2LoginView')
         authorization_url = settings.OAUTH2_PROVIDER_AUTHORIZATION_URL
         client_id = settings.OAUTH2_CLIENT_ID
         redirect_uri = settings.OAUTH2_REDIRECT_URI
@@ -60,8 +65,14 @@ class OAuth2LoginView(View):
         # Build the authorization URL
         auth_url = (
             f"{authorization_url}?response_type=code&client_id={client_id}"
-            f"&redirect_uri={redirect_uri}&scope={' '.join(scope)}"
-        )
+            f"&redirect_uri={redirect_uri}&scope={' '.join(scope)}")
+        try:
+            if cache.get('ACCESS_TOKEN'):
+                return HttpResponse('You are already logged in')
+            else:
+                return redirect('login')
+        except KeyError:
+            return redirect('login')
 
-        return redirect(auth_url)
-        # return JsonResponse({'message': 'Hello, World!'})
+
+        

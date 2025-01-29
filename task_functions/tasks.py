@@ -7,6 +7,9 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from smbclient import open_file, register_session, stat, remove
 from smbclient.shutil import copyfileobj
+from django.core.cache import cache
+import logging
+logger = logging.getLogger(__name__)
 
 loggercelery = get_task_logger(__name__)
 
@@ -131,11 +134,11 @@ def retriever(arg, object_type='Full'):
     except ConnectionError as e:
         loggercelery.error(f"Failed to connect: {e}")
         return None
-
-    auth_token = "your_auth_token"
+    
+    access_token = cache.get('ACCESS_TOKEN')
 
     headers = {
-        'Authorization': f'Bearer {auth_token}'
+        'Authorization': f'Bearer {access_token}'
     }
     
     datahub_data = fetch_datahub_data(headers)
