@@ -56,6 +56,7 @@ class OAuth2LoginView(View):
     """
 
     def get(self, request):
+        logger.info('OAuth2LoginView')
         authorization_url = settings.OAUTH2_PROVIDER_AUTHORIZATION_URL
         client_id = settings.OAUTH2_CLIENT_ID
         redirect_uri = settings.OAUTH2_REDIRECT_URI
