@@ -69,9 +69,9 @@ class OAuth2LoginView(View):
             if cache.get('ACCESS_TOKEN'):
                 return HttpResponse('You are already logged in')
             else:
-                return redirect(auth_url)
+                return redirect('login')
         except KeyError:
-            return redirect(auth_url)
+            return redirect('login')
 
 
         
