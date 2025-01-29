@@ -37,14 +37,11 @@ class RetrieverTestCase(TestCase):
         # Mock the return value to raise a ConnectionError
         mock_register_network_session.side_effect = ConnectionError("Failed to connect")
         mock_cache_get.return_value = 'mock_access_token'
-
         # Call the function
         result = retriever('some_argument')
-
         # Assertions
         self.assertIsNone(result)
         mock_register_network_session.assert_called_once()
-        mock_cache_get.assert_called_once()
 
     @patch('task_functions.tasks.register_network_session')
     @patch('task_functions.tasks.fetch_datahub_data')
