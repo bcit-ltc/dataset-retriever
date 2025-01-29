@@ -66,7 +66,7 @@ class OAuth2LoginView(View):
             f"{authorization_url}?response_type=code&client_id={client_id}"
             f"&redirect_uri={redirect_uri}&scope={' '.join(scope)}")
         try:
-            if os.environ['ACCESS_TOKEN']:
+            if cache.get('ACCESS_TOKEN'):
                 return HttpResponse('You are already logged in')
             else:
                 return redirect(auth_url)
