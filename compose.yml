@@ -40,22 +40,23 @@ services:
     #     condition: service_completed_successfully
 
   # Celery Service
-  # celery:
-  #   image: dataset_retriever
-  #   build:
-  #     context: .
-  #   command:
-  #     - /bin/sh
-  #     - -c
-  #     - |
-  #       /opt/venv/bin/celery -A dataset_retriever worker --beat --loglevel=INFO --scheduler=django_celery_beat.schedulers:DatabaseScheduler worker_hijack_root_logger=False worker_redirect_stdouts=True
-  #       /opt/venv/bin/celery -A dataset_retriever worker --loglevel=INFO --concurrency=1 -n worker1@%h worker_hijack_root_logger=False worker_redirect_stdouts=True
-  #   working_dir: /code
-  #   healthcheck:
-  #     test: /opt/venv/bin/celery -A dataset_retriever inspect ping worker1@%h
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
+#   celery:
+#     image: dataset_retriever
+#     build:
+#       context: .
+#     command:
+#       - /bin/sh
+#       - -c
+#       - |
+#         supervisord -n -c supervisord.conf
+# # /opt/venv/bin/celery -A dataset_retriever beat --detach --loglevel=DEBUG --scheduler=django_celery_beat.schedulers.DatabaseScheduler worker_hijack_root_logger=False worker_redirect_stdouts=True worker_redirect_stdouts_level=DEBUG
+# # /opt/venv/bin/celery -A dataset_retriever worker --loglevel=INFO --concurrency=1 -n worker1@%h worker_hijack_root_logger=False worker_redirect_stdouts=True
+#     working_dir: /code
+#     healthcheck:
+#       test: /opt/venv/bin/celery -A dataset_retriever inspect ping worker1@%h
+#       interval: 30s
+#       timeout: 10s
+#       retries: 3
 
 
   # Redis Service

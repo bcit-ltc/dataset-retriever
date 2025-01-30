@@ -13,20 +13,23 @@ python manage.py migrate
 mkdir -p /redis-data
 redis-server --daemonize yes --dbfilename redis-dump.rdb --dir /redis-data
 
->&2 echo "Starting Celery Worker..."
-celery -A dataset_retriever worker --detach --loglevel=DEBUG \
---concurrency=1 -n worker1@%h \
-worker_hijack_root_logger=False \
-worker_redirect_stdouts=True \
-worker_redirect_stdouts_level=DEBUG
+# >&2 echo "Starting Celery Worker..."
+# celery -A dataset_retriever worker --detach --loglevel=DEBUG \
+# --concurrency=1 -n worker1@%h \
+# worker_hijack_root_logger=False \
+# worker_redirect_stdouts=True \
+# worker_redirect_stdouts_level=DEBUG
 
 
->&2 echo "Starting Celery Beat..."
-celery -A dataset_retriever beat --detach --loglevel=DEBUG \
---scheduler=django_celery_beat.schedulers.DatabaseScheduler 
-worker_hijack_root_logger=False \
-worker_redirect_stdouts=True \
-worker_redirect_stdouts_level=DEBUG
+# >&2 echo "Starting Celery Beat..."
+# celery -A dataset_retriever beat --detach --loglevel=DEBUG \
+# --scheduler=django_celery_beat.schedulers.DatabaseScheduler 
+# worker_hijack_root_logger=False \
+# worker_redirect_stdouts=True \
+# worker_redirect_stdouts_level=DEBUG
+
+# >&2 echo "Starting Supervisor ..."
+supervisord -n -c supervisord.conf &
 
 >&2 echo "Starting dataset retriever ..."
 exec "$@"
