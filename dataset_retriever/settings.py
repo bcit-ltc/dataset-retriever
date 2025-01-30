@@ -233,17 +233,17 @@ LOGGING = {
             "propagate": True,
         },
         "oauth_connector": {
-            "handlers": ["console"],
+            "handlers": ["console","file_log"],
             "level": "INFO",
             "propagate": True,
         },
         "celery.task": {
-            "handlers": ["console","file_log"],
+            "handlers": ["console"],
             "level": "DEBUG",
             "propagate": True,
         },
         "celery": {
-            "handlers": ["console","file_log"],
+            "handlers": ["console"],
             "level": "DEBUG",
             "propagate": True,
         },

@@ -44,6 +44,7 @@ class OAuth2CallbackView(View):
                 cache.set('ACCESS_TOKEN', response_data['access_token'])
                 cache.set('REFRESH_TOKEN', response_data['refresh_token'])
                 # return JsonResponse(response_data)
+                logger.info(response_data)
                 return redirect('/')
             else:
                 return JsonResponse({'error': response_data}, status=response.status_code)
