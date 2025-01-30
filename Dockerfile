@@ -30,13 +30,16 @@ RUN echo $VERSION > .env
 RUN set -ex; \
         apt-get update; \
         apt-get install -y --no-install-recommends \
+                supervisor \
                 redis-server;
+
 
 COPY --from=base /root/.cache /root/.cache
 COPY --from=base /opt/venv /opt/venv
 
 COPY manage.py ./
 COPY docker-entrypoint.sh /usr/local/bin
+COPY supervisord.conf supervisord.conf
 COPY dataset_retriever dataset_retriever
 COPY task_functions task_functions
 COPY oauth_connector oauth_connector
@@ -51,3 +54,5 @@ EXPOSE 9000
 
 CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:9000", "--forwarded-allow-ips=*", \
 "--log-level", "DEBUG", "--timeout", "120", "--graceful-timeout", "120", "dataset_retriever.wsgi"]
+
+# CMD ["supervisord", "-n", "-c", "supervisord.conf"]
