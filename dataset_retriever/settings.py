@@ -239,13 +239,13 @@ LOGGING = {
         },
         "celery.task": {
             "handlers": ["console"],
-            "level": "DEBUG",
+            "level": "INFO",
             "propagate": True,
         },
-        "celery": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-            "propagate": True,
-        },
+        # "celery": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": True,
+        # },
     },
 }

@@ -1,6 +1,6 @@
 import os
 import logging
-from celery import Celery
+from celery import Celery, signature
 from celery.schedules import crontab
 from celery.signals import setup_logging
 
@@ -28,17 +28,23 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    'task1-schedule': 
-    {
-        'task': 'task1',
-        # 'schedule': crontab(minute='*/5'), # runs every 5 minutes
-        'schedule': crontab(), # runs every minute
-        'args': ([10])
-    },
-    # 'task2-schedule':{
-    #     'task': 'task2',
-    #     'schedule': crontab(),
-    #     'args': ([20])
+    # 'task1-schedule': 
+    # {
+    #     'task': 'task1',
+    #     # 'schedule': crontab(minute='*/5'), # runs every 5 minutes
+    #     'schedule': crontab(), # runs every minute
+    #     'args': ([10])
     # },
+    'task2-schedule':{
+        'task': 'get_refresh_token',
+        'schedule': crontab(),
+        'args': (20,),
+        'options': {
+            'queue': 'default',
+            'link': signature('task1', 
+                              args=(30,),
+                              queue='default')
+            }
+    },
 }
 

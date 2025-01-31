@@ -165,3 +165,15 @@ def retriever(arg, object_type='Full'):
     download_and_extract_files(datasets, headers)
     
     return None
+
+
+
+@shared_task(name='get_refresh_token')
+def get_refresh_token(arg):
+    loggercelery.info(f"get_refresh_token ran arg: {arg}")
+    return None
+
+@shared_task(name='task3')
+def task3(arg):
+    logger.info(f"task3 ran arg: {arg}")
+    return None
