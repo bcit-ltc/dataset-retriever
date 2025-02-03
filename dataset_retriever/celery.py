@@ -1,6 +1,6 @@
 import os
 import logging
-from celery import Celery, signature
+from celery import Celery, Signature
 from celery.schedules import crontab
 from celery.signals import setup_logging
 
@@ -27,6 +27,10 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 # Load task modules from all registered Django apps.
 app.autodiscover_tasks()
 
+@app.task
+def task3(arg):
+    print(f"Task 3 executed with argument: {arg}")
+
 app.conf.beat_schedule = {
     # 'task1-schedule': 
     # {
@@ -37,14 +41,16 @@ app.conf.beat_schedule = {
     #     'args': ([10])
     # },
     'task2-schedule':{
-        'task': 'get_refresh_token',
+        'task': 'sequental_tasks',
         'schedule': crontab(),
         'args': (20,),
-        'options': {
-            'queue': 'default',
-            'link': signature('task1', 
-                              args=(30,),
-                              queue='default')
-            }
+        # 'options': {
+        #     'queue': 'default',
+        #     'link': Signature(
+        #         'task3', 
+        #         args=(30,),
+        #         kwargs={},
+        #         queue='default')
+        # }
     },
 }
