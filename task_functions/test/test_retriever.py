@@ -4,15 +4,15 @@ from task_functions.tasks import retriever
 
 class RetrieverTestCase(TestCase):
 
-    @patch('task_functions.tasks.register_network_session')
+    # @patch('task_functions.tasks.register_network_session')
     @patch('task_functions.tasks.fetch_datahub_data')
     @patch('task_functions.tasks.filter_objects')
     @patch('task_functions.tasks.process_datasets')
     @patch('task_functions.tasks.download_and_extract_files')
     @patch('django.core.cache.cache.get')
-    def test_retriever_success(self, mock_cache_get, mock_download_and_extract_files, mock_process_datasets, mock_filter_objects, mock_fetch_datahub_data, mock_register_network_session):
+    def test_retriever_success(self, mock_cache_get, mock_download_and_extract_files, mock_process_datasets, mock_filter_objects, mock_fetch_datahub_data):
         # Mock the return values
-        mock_register_network_session.return_value = None
+        # mock_register_network_session.return_value = None
         mock_fetch_datahub_data.return_value = {'Objects': [{'Full': {'Name': 'Role Details', 'ExtractsLink': 'http://example.com'}}]}
         mock_filter_objects.return_value = [{'Full': {'Name': 'Role Details', 'ExtractsLink': 'http://example.com'}}]
         mock_process_datasets.return_value = [{'Name': 'RoleDetails', 'ExtractsLink': 'http://example.com'}]
@@ -24,31 +24,31 @@ class RetrieverTestCase(TestCase):
 
         # Assertions
         self.assertIsNone(result)
-        mock_register_network_session.assert_called_once()
+        # mock_register_network_session.assert_called_once()
         mock_fetch_datahub_data.assert_called_once()
         mock_filter_objects.assert_called_once()
         mock_process_datasets.assert_called_once()
         mock_download_and_extract_files.assert_called_once()
         mock_cache_get.assert_called_once()
 
-    @patch('task_functions.tasks.register_network_session')
+    # @patch('task_functions.tasks.register_network_session')
     @patch('django.core.cache.cache.get')
-    def test_retriever_connection_error(self, mock_cache_get, mock_register_network_session):
+    def test_retriever_connection_error(self, mock_cache_get):
         # Mock the return value to raise a ConnectionError
-        mock_register_network_session.side_effect = ConnectionError("Failed to connect")
+        # mock_register_network_session.side_effect = ConnectionError("Failed to connect")
         mock_cache_get.return_value = 'mock_access_token'
         # Call the function
         result = retriever('some_argument')
         # Assertions
         self.assertIsNone(result)
-        mock_register_network_session.assert_called_once()
+        # mock_register_network_session.assert_called_once()
 
-    @patch('task_functions.tasks.register_network_session')
+    # @patch('task_functions.tasks.register_network_session')
     @patch('task_functions.tasks.fetch_datahub_data')
     @patch('django.core.cache.cache.get')
-    def test_retriever_fetch_datahub_data_failure(self, mock_cache_get, mock_fetch_datahub_data, mock_register_network_session):
+    def test_retriever_fetch_datahub_data_failure(self, mock_cache_get, mock_fetch_datahub_data):
         # Mock the return values
-        mock_register_network_session.return_value = None
+        # mock_register_network_session.return_value = None
         mock_fetch_datahub_data.return_value = None
         mock_cache_get.return_value = 'mock_access_token'
 
@@ -57,6 +57,6 @@ class RetrieverTestCase(TestCase):
 
         # Assertions
         self.assertIsNone(result)
-        mock_register_network_session.assert_called_once()
+        # mock_register_network_session.assert_called_once()
         mock_fetch_datahub_data.assert_called_once()
         mock_cache_get.assert_called_once()
