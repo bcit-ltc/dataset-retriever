@@ -3,7 +3,7 @@ import os
 import requests
 import zipfile
 from django.conf import settings
-from celery import shared_task
+from celery import shared_task, chain
 from celery.utils.log import get_task_logger
 from smbclient import open_file, register_session, stat, remove
 from smbclient.shutil import copyfileobj
@@ -168,12 +168,23 @@ def retriever(arg, object_type='Full'):
 
 
 
-@shared_task(name='get_refresh_token')
-def get_refresh_token(arg):
+@shared_task(name='sequental_tasks')
+def sequental_tasks(arg):
     loggercelery.info(f"get_refresh_token ran arg: {arg}")
+    chain(taska.s("10"), taskb.s(), taskc.s()).apply_async()
     return None
 
-@shared_task(name='task3')
-def task3(arg):
-    logger.info(f"task3 ran arg: {arg}")
-    return None
+@shared_task(name='taska')
+def taska(arg):
+    loggercelery.info(f"taska ran arg: {arg}")
+    return "taska return"
+
+@shared_task(name='taskb')
+def taskb(arg):
+    loggercelery.info(f"taskb ran arg: {arg}")
+    return "taskb return"
+
+@shared_task(name='taskc')
+def taskc(arg):
+    loggercelery.info(f"taskc ran arg: {arg}")
+    return "taskc return"
