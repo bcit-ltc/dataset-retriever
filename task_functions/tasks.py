@@ -51,9 +51,13 @@ def process_datasets(filtered_objects, object_type):
 
 def save_zip_file(url, headers, remote_path):
     try:
+        # Ensure the directory exists
+        os.makedirs(os.path.dirname(remote_path), exist_ok=True)
+        
         with requests.get(url, headers=headers, stream=True) as r:
             r.raise_for_status()
-            with open_file(remote_path, mode="wb") as remote_file:
+            # with open_file(remote_path, mode="wb") as remote_file:
+            with open(remote_path, mode="wb") as remote_file:  # Save to local file
                 for chunk in r.iter_content(chunk_size=8192):
                     remote_file.write(chunk)
         loggercelery.info(f"Successfully uploaded to {remote_path}")
@@ -70,12 +74,14 @@ def save_zip_file(url, headers, remote_path):
 
 def extract_and_save_csv(zip_path, csv_path):
     try:
-        with open_file(zip_path, mode="rb") as remote_file:
+        # with open_file(zip_path, mode="rb") as remote_file:
+        with open(zip_path, mode="rb") as remote_file:  # Open local file
             with zipfile.ZipFile(remote_file) as zip_ref:
                 for file_info in zip_ref.infolist():
                     if file_info.filename.endswith('.csv'):
                         with zip_ref.open(file_info.filename) as csv_file:
-                            with open_file(csv_path, mode="wb") as remote_csv_file:
+                            # with open_file(csv_path, mode="wb") as remote_csv_file:
+                            with open(csv_path, mode="wb") as remote_csv_file:  # Save to local file
                                 copyfileobj(csv_file, remote_csv_file)
                         loggercelery.info(f"Successfully extracted and uploaded {csv_path}")
     except Exception as e:
@@ -83,7 +89,8 @@ def extract_and_save_csv(zip_path, csv_path):
 
 def remove_file(path):
     try:
-        remove(path)
+        # remove(path)
+        os.remove(path)  # Remove local file
         loggercelery.info(f"Successfully removed: {path}")
     except PermissionError:
         loggercelery.error(f"Permission denied: {path}")
@@ -115,8 +122,10 @@ def download_and_extract_files(datasets, headers):
             zip_file_name = f"{result['Name']}__{date}.zip"
             csv_file_name = f"{result['Name']}__{date}.csv"
 
-            zip_upload_path = os.path.join(settings.NETWORK_DRIVE_PATH, zip_file_name)
-            csv_upload_path = os.path.join(settings.NETWORK_DRIVE_PATH, csv_file_name)
+            # zip_upload_path = os.path.join(settings.NETWORK_DRIVE_PATH, zip_file_name)
+            # csv_upload_path = os.path.join(settings.NETWORK_DRIVE_PATH, csv_file_name)
+            zip_upload_path = os.path.join(settings.BASE_DIR, 'Input', zip_file_name)
+            csv_upload_path = os.path.join(settings.BASE_DIR, 'Input', csv_file_name)
 
             save_zip_file(result['DownloadLink'], headers, zip_upload_path)
             extract_and_save_csv(zip_upload_path, csv_upload_path)
@@ -129,11 +138,11 @@ def download_and_extract_files(datasets, headers):
 def retriever(arg, object_type='Full'):
     loggercelery.info(f"task1 ran arg: {arg}")
 
-    try:
-        register_network_session()
-    except ConnectionError as e:
-        loggercelery.error(f"Failed to connect: {e}")
-        return None
+    # try:
+    #     register_network_session()
+    # except ConnectionError as e:
+    #     loggercelery.error(f"Failed to connect: {e}")
+    #     return None
     
     access_token = cache.get('ACCESS_TOKEN')
 
