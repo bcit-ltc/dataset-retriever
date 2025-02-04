@@ -31,8 +31,9 @@ app.conf.beat_schedule = {
     'task1-schedule': 
     {
         'task': 'task1',
+        # 'schedule': crontab(), # runs every minute
         # 'schedule': crontab(minute='*/5'), # runs every 5 minutes
-        'schedule': crontab(), # runs every minute
+        'schedule': crontab(minute='*/30'), # runs every half hour
         'args': ([10])
     },
     # 'task2-schedule':{
@@ -41,4 +42,3 @@ app.conf.beat_schedule = {
     #     'args': ([20])
     # },
 }
-
