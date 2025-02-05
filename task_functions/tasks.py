@@ -180,7 +180,8 @@ def retriever(arg, object_type='Full'):
 @shared_task(name='execute_sequential_tasks')
 def execute_sequential_tasks(arg):
     loggercelery.info(f"get_refresh_token ran arg: {arg}")
-    chain_tasks = chain(get_refresh_token.s("10"), register_network_session2.s(), taskc.s())
+    # chain_tasks = chain(get_refresh_token.s("10"), register_network_session2.s(), taskc.s())
+    chain_tasks = chain(get_refresh_token.s("10"), taskc.s())
     chain_tasks.apply_async(link_error=handle_task_failure.s())
     # chain(get_refresh_token.s("10"), taskb.s(), taskc.s()).apply_async()
     return None
@@ -203,6 +204,9 @@ def get_refresh_token(arg):
         token_data = response.json()
         cache.set('ACCESS_TOKEN', token_data['access_token'])
         cache.set('REFRESH_TOKEN', token_data['refresh_token'])
+        loggercelery.info(f"Successfully refreshed token")
+        loggercelery.info(f"Access token: {token_data['access_token']}")
+        loggercelery.info(f"Refresh token: {token_data['refresh_token']}")
         return token_data
     except requests.exceptions.RequestException as e:
         loggercelery.error(f"Failed to refresh token: {e}")
