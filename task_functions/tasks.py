@@ -180,20 +180,48 @@ def retriever(arg, object_type='Full'):
 @shared_task(name='sequental_tasks')
 def sequental_tasks(arg):
     loggercelery.info(f"get_refresh_token ran arg: {arg}")
-    chain(taska.s("10"), taskb.s(), taskc.s()).apply_async()
+    chain_tasks = chain(get_refresh_token.s("10"), register_network_session2.s(), taskc.s())
+    chain_tasks.apply_async(link_error=handle_task_failure.s())
+    # chain(get_refresh_token.s("10"), taskb.s(), taskc.s()).apply_async()
     return None
 
-@shared_task(name='taska')
-def taska(arg):
+@shared_task(name='get_refresh_token')
+def get_refresh_token(arg):
     loggercelery.info(f"taska ran arg: {arg}")
-    return "taska return"
 
-@shared_task(name='taskb')
-def taskb(arg):
-    loggercelery.info(f"taskb ran arg: {arg}")
-    return "taskb return"
+
+    # added this snippet below from chatgpt to test refresh token
+    # """
+    # Function to obtain a refresh token from an external authentication provider.
+    # """
+    # url = "https://example.com/api/token/refresh/"  # Replace with the actual endpoint
+    # data = {
+    #     "refresh_token": settings.EXTERNAL_REFRESH_TOKEN,
+    #     "client_id": settings.EXTERNAL_CLIENT_ID,
+    #     "client_secret": settings.EXTERNAL_CLIENT_SECRET,
+    #     "grant_type": "refresh_token",
+    # }
+    
+    # try:
+    #     response = requests.post(url, data=data)
+    #     response.raise_for_status()  # Raises an error for HTTP error responses (4xx, 5xx)
+    #     return response.json()  # Returns the refreshed token data
+    # except requests.exceptions.RequestException as e:
+    #     return {"error": str(e)}
+
+
+@shared_task(name='register_network_session2')
+def register_network_session2(arg):
+    loggercelery.info(f"register_network_session2 ran arg: {arg}")
+    raise Exception("register_network_session2 failed")
+    # return "taskb return"
 
 @shared_task(name='taskc')
 def taskc(arg):
     loggercelery.info(f"taskc ran arg: {arg}")
     return "taskc return"
+
+@shared_task(name='handle_task_failure')
+def handle_task_failure(task_id):
+    loggercelery.error(f"Task failed: {task_id}")
+    return None
