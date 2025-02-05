@@ -41,7 +41,7 @@ app.conf.beat_schedule = {
     #     'args': ([10])
     # },
     'task2-schedule':{
-        'task': 'sequental_tasks',
+        'task': 'execute_sequential_tasks',
         'schedule': crontab(),
         'args': (20,),
         # 'options': {

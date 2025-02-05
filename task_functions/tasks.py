@@ -177,8 +177,8 @@ def retriever(arg, object_type='Full'):
 
 
 
-@shared_task(name='sequental_tasks')
-def sequental_tasks(arg):
+@shared_task(name='execute_sequential_tasks')
+def execute_sequential_tasks(arg):
     loggercelery.info(f"get_refresh_token ran arg: {arg}")
     chain_tasks = chain(get_refresh_token.s("10"), register_network_session2.s(), taskc.s())
     chain_tasks.apply_async(link_error=handle_task_failure.s())
