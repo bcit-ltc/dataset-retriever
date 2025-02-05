@@ -3,7 +3,7 @@ import os
 import requests
 import zipfile
 from django.conf import settings
-from celery import shared_task
+from celery import shared_task, chain
 from celery.utils.log import get_task_logger
 from smbclient import open_file, register_session, stat, remove
 from smbclient.shutil import copyfileobj
@@ -173,4 +173,58 @@ def retriever(arg, object_type='Full'):
     
     download_and_extract_files(datasets, headers)
     
+    return None
+
+
+
+@shared_task(name='execute_sequential_tasks')
+def execute_sequential_tasks(arg):
+    loggercelery.info(f"get_refresh_token ran arg: {arg}")
+    # chain_tasks = chain(get_refresh_token.s("10"), register_network_session2.s(), taskc.s())
+    chain_tasks = chain(get_refresh_token.s("10"), taskc.s())
+    chain_tasks.apply_async(link_error=handle_task_failure.s())
+    # chain(get_refresh_token.s("10"), taskb.s(), taskc.s()).apply_async()
+    return None
+
+@shared_task(name='get_refresh_token')
+def get_refresh_token(arg):
+    loggercelery.info(f"taska ran arg: {arg}")
+
+    url = settings.OAUTH2_PROVIDER_TOKEN_URL
+    data = {
+        "refresh_token": cache.get('REFRESH_TOKEN'),
+        "client_id": settings.OAUTH2_CLIENT_ID,
+        "client_secret": settings.OAUTH2_CLIENT_SECRET,
+        "grant_type": "refresh_token",
+    }
+    
+    try:
+        response = requests.post(url, data=data)
+        response.raise_for_status()  # Raises an error for HTTP error responses (4xx, 5xx)
+        token_data = response.json()
+        cache.set('ACCESS_TOKEN', token_data['access_token'])
+        cache.set('REFRESH_TOKEN', token_data['refresh_token'])
+        loggercelery.info(f"Successfully refreshed token")
+        loggercelery.info(f"Access token: {token_data['access_token']}")
+        loggercelery.info(f"Refresh token: {token_data['refresh_token']}")
+        return token_data
+    except requests.exceptions.RequestException as e:
+        loggercelery.error(f"Failed to refresh token: {e}")
+        return {"error": str(e)}
+
+
+@shared_task(name='register_network_session2')
+def register_network_session2(arg):
+    loggercelery.info(f"register_network_session2 ran arg: {arg}")
+    raise Exception("register_network_session2 failed")
+    # return "taskb return"
+
+@shared_task(name='taskc')
+def taskc(arg):
+    loggercelery.info(f"taskc ran arg: {arg}")
+    return "taskc return"
+
+@shared_task(name='handle_task_failure')
+def handle_task_failure(task_id):
+    loggercelery.error(f"Task failed: {task_id}")
     return None
