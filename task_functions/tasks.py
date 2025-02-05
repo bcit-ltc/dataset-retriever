@@ -189,25 +189,24 @@ def sequental_tasks(arg):
 def get_refresh_token(arg):
     loggercelery.info(f"taska ran arg: {arg}")
 
-
-    # added this snippet below from chatgpt to test refresh token
-    # """
-    # Function to obtain a refresh token from an external authentication provider.
-    # """
-    # url = "https://example.com/api/token/refresh/"  # Replace with the actual endpoint
-    # data = {
-    #     "refresh_token": settings.EXTERNAL_REFRESH_TOKEN,
-    #     "client_id": settings.EXTERNAL_CLIENT_ID,
-    #     "client_secret": settings.EXTERNAL_CLIENT_SECRET,
-    #     "grant_type": "refresh_token",
-    # }
+    url = settings.OAUTH2_PROVIDER_TOKEN_URL
+    data = {
+        "refresh_token": cache.get('REFRESH_TOKEN'),
+        "client_id": settings.OAUTH2_CLIENT_ID,
+        "client_secret": settings.OAUTH2_CLIENT_SECRET,
+        "grant_type": "refresh_token",
+    }
     
-    # try:
-    #     response = requests.post(url, data=data)
-    #     response.raise_for_status()  # Raises an error for HTTP error responses (4xx, 5xx)
-    #     return response.json()  # Returns the refreshed token data
-    # except requests.exceptions.RequestException as e:
-    #     return {"error": str(e)}
+    try:
+        response = requests.post(url, data=data)
+        response.raise_for_status()  # Raises an error for HTTP error responses (4xx, 5xx)
+        token_data = response.json()
+        cache.set('ACCESS_TOKEN', token_data['access_token'])
+        cache.set('REFRESH_TOKEN', token_data['refresh_token'])
+        return token_data
+    except requests.exceptions.RequestException as e:
+        loggercelery.error(f"Failed to refresh token: {e}")
+        return {"error": str(e)}
 
 
 @shared_task(name='register_network_session2')
