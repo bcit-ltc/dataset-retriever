@@ -197,7 +197,7 @@ LOGGING = {
             "style": "{",
         },
         "simple": {
-            "format": "{levelname} {message}",
+            "format": "{levelname} {asctime} {message}",
             "style": "{",
         },
         "custom": {
@@ -220,6 +220,14 @@ LOGGING = {
             "maxBytes": 1024 * 1024 * 10,  # 10 MB
             # "filters": ['require_debug_true']
         },
+        "homepage_log": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": "page.log",
+            "formatter": "simple",
+            "maxBytes": 1024 * 1024 * 10,  # 10 MB
+            # "filters": ['require_debug_true']
+        },
     },
     "loggers": {
         "django": {
@@ -238,7 +246,7 @@ LOGGING = {
             "propagate": True,
         },
         "celery.task": {
-            "handlers": ["console"],
+            "handlers": ["console", "homepage_log"],
             "level": "INFO",
             "propagate": True,
         },
