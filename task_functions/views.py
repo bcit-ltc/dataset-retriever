@@ -21,8 +21,7 @@ class Home(View):
         try:
             with open(log_file_path, 'r') as log_file:
                 lines = log_file.readlines()
-                info_lines = [line for line in lines if 'INFO' in line]
-                last_10_info_lines = info_lines[-10:]
+                last_10_info_lines = lines[-10:]
                 page = ""
                 for line in last_10_info_lines:
                     page += line.strip() + "<br>"

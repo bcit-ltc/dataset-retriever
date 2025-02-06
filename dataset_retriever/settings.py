@@ -183,13 +183,21 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 # CELERYD_TIME_LIMIT=1800
 # CELERYD_HIJACK_ROOT_LOGGER = False
 
+import logging
+class InfoOnlyFilter(logging.Filter):
+    def filter(self, record):
+        return record.levelno == logging.INFO
+    
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "filters": {
         'require_debug_true': {
             '()': 'django.utils.log.RequireDebugTrue',
-        }
+        },
+        'info_only': {
+            '()': InfoOnlyFilter,
+        },
     },
     "formatters": {
         "verbose": {
@@ -202,6 +210,10 @@ LOGGING = {
         },
         "custom": {
             "format": "{levelname} {asctime} {name} {funcName} >>> {message}",
+            "style": "{",
+        },
+        "public_view": {
+            "format": "{asctime} {message}",
             "style": "{",
         },
     },
@@ -224,9 +236,9 @@ LOGGING = {
             "level": "INFO",
             "class": "logging.handlers.RotatingFileHandler",
             "filename": "page.log",
-            "formatter": "simple",
+            "formatter": "public_view",
             "maxBytes": 1024 * 1024 * 10,  # 10 MB
-            # "filters": ['require_debug_true']
+            "filters": ['info_only']
         },
     },
     "loggers": {
