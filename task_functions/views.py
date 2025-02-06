@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class Home(View):
     """
-    A Django view to redirect users to the OAuth2 provider's authorization page.
+    Home page view
     """
 
     def get(self, request):
@@ -27,13 +27,10 @@ class Home(View):
                 for line in last_10_info_lines:
                     page += line.strip() + "<br>"
                 return HttpResponse(page)
-            
         except FileNotFoundError:
             logger.error(f"Log file not found: {log_file_path}")
         except Exception as e:
             logger.error(f"An error occurred while reading the log file: {e}")
-
-        return HttpResponse('You are already logged in')
 
 
         
