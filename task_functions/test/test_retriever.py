@@ -15,6 +15,9 @@ class ExecuteSequentialTasksTest(TestCase):
         arg = 20
         mock_chain.return_value = MagicMock()
         mock_fetch.return_value = MagicMock()
+        mock_filter.return_value = MagicMock()
+        mock_process.return_value = MagicMock()
+        mock_download.return_value = MagicMock()
         
         # Act
         execute_sequential_tasks(arg)
