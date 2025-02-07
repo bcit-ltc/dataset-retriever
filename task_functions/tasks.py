@@ -189,8 +189,8 @@ def download_and_extract_files_task(datasets):
 
 
 
-@shared_task(name='get_refresh_token')
-def get_refresh_token(arg):
+@shared_task(name='renew_token')
+def renew_token(arg):
     loggercelery.info(f"taska ran arg: {arg}")
 
     url = settings.OAUTH2_PROVIDER_TOKEN_URL
@@ -245,7 +245,7 @@ def execute_sequential_tasks(arg):
     ]
     
     chain_tasks = chain(
-        get_refresh_token.s(arg),
+        renew_token.s(arg),
         fetch_datahub_data_task.s(),
         filter_objects_task.s(filter_names, 'Full'),
         process_datasets_task.s('Full'),
