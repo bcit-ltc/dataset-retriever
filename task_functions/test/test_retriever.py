@@ -14,6 +14,7 @@ class ExecuteSequentialTasksTest(TestCase):
         # Arrange
         arg = 20
         mock_chain.return_value = MagicMock()
+        mock_fetch.return_value = MagicMock()
         
         # Act
         execute_sequential_tasks(arg)
@@ -27,8 +28,8 @@ class ExecuteSequentialTasksTest(TestCase):
         mock_chain.assert_called_once_with(
             mock_renew(),
             mock_fetch(),
-            mock_filter(),
-            mock_process(),
-            mock_download()
+            mock_filter(mock_fetch(), ['Role Details', 'Users', 'Organizational Units', 'Enrollments and Withdrawals'], 'Full'),
+            mock_process(mock_filter(mock_fetch(), ['Role Details', 'Users', 'Organizational Units', 'Enrollments and Withdrawals'], 'Full')),
+            mock_download(mock_process(mock_filter(mock_fetch(), ['Role Details', 'Users', 'Organizational Units', 'Enrollments and Withdrawals'], 'Full')))
         )
         mock_chain().apply_async.assert_called_once_with(link_error=MagicMock())
