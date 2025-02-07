@@ -27,7 +27,7 @@ class ExecuteSequentialTasksTest(TestCase):
         
         # Assert
         mock_renew.assert_called_once_with(arg)
-        mock_cache_get.assert_called_with('ACCESS_TOKEN')
+        mock_cache_get.assert_called_once_with('ACCESS_TOKEN')
         mock_fetch.assert_called_once_with("access_token")
         mock_filter.assert_called_once_with(mock_fetch.return_value, ['Role Details', 'Users', 'Organizational Units', 'Enrollments and Withdrawals'], 'Full')
         mock_process.assert_called_once_with(mock_filter.return_value, 'Full')
