@@ -18,10 +18,10 @@ class RetrieverTestCase(TestCase):
     @patch('redis.StrictRedis')
     def test_execute_sequential_tasks_success(self, mock_redis, mock_download_and_extract_files, mock_process_datasets, mock_filter_objects, mock_fetch_datahub_data, mock_cache_get):
         # Mock the return values
-        mock_fetch_datahub_data.return_value = {'Objects': [{'Full': {'Name': 'Role Details', 'ExtractsLink': 'http://example.com'}}]}
-        mock_filter_objects.return_value = [{'Full': {'Name': 'Role Details', 'ExtractsLink': 'http://example.com'}}]
-        mock_process_datasets.return_value = [{'Name': 'RoleDetails', 'ExtractsLink': 'http://example.com'}]
-        mock_download_and_extract_files.return_value = None
+        mock_fetch_datahub_data.return_value = MagicMock()
+        mock_filter_objects.return_value = MagicMock()
+        mock_process_datasets.return_value = MagicMock()
+        mock_download_and_extract_files.return_value = MagicMock()
 
         # Call the task
         result = execute_sequential_tasks('some_argument')
