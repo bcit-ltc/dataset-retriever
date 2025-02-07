@@ -26,8 +26,9 @@ def register_network_session():
         raise
 
 @shared_task(name='fetch_datahub_data_task')
-def fetch_datahub_data_task(access_token):
+def fetch_datahub_data_task():
     try:
+        access_token = cache.get('ACCESS_TOKEN')
         headers = {
             'Authorization': f'Bearer {access_token}'
         }
@@ -212,7 +213,7 @@ def renew_token(arg):
         loggercelery.info(f"Successfully refreshed token")
         # loggercelery.info(f"Access token: {token_data['access_token']}")
         # loggercelery.info(f"Refresh token: {token_data['refresh_token']}")
-        return token_data['access_token']
+        return None
     except requests.exceptions.RequestException as e:
         loggercelery.error(f"Failed to refresh token: {e}")
         return {"error": str(e)}
