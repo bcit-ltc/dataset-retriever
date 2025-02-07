@@ -1,5 +1,5 @@
 from django.test import TestCase
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from task_functions.tasks import (
     fetch_datahub_data_task,
     filter_objects_task,
@@ -10,10 +10,10 @@ from task_functions.tasks import (
 
 class RetrieverTestCase(TestCase):
 
-    @patch('task_functions.tasks.fetch_datahub_data_task.apply_async')
-    @patch('task_functions.tasks.filter_objects_task.apply_async')
-    @patch('task_functions.tasks.process_datasets_task.apply_async')
-    @patch('task_functions.tasks.download_and_extract_files_task.apply_async')
+    @patch('task_functions.tasks.fetch_datahub_data_task.apply_async', return_value=MagicMock())
+    @patch('task_functions.tasks.filter_objects_task.apply_async', return_value=MagicMock())
+    @patch('task_functions.tasks.process_datasets_task.apply_async', return_value=MagicMock())
+    @patch('task_functions.tasks.download_and_extract_files_task.apply_async', return_value=MagicMock())
     @patch('django.core.cache.cache.get')
     def test_execute_sequential_tasks_success(self, mock_cache_get, mock_download_and_extract_files, mock_process_datasets, mock_filter_objects, mock_fetch_datahub_data):
         # Mock the return values
@@ -43,7 +43,7 @@ class RetrieverTestCase(TestCase):
         # Assertions
         self.assertIsNone(result)
 
-    @patch('task_functions.tasks.fetch_datahub_data_task.apply_async')
+    @patch('task_functions.tasks.fetch_datahub_data_task.apply_async', return_value=MagicMock())
     @patch('django.core.cache.cache.get')
     def test_execute_sequential_tasks_fetch_datahub_data_failure(self, mock_cache_get, mock_fetch_datahub_data):
         # Mock the return values

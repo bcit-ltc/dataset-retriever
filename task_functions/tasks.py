@@ -26,8 +26,11 @@ def register_network_session():
         raise
 
 @shared_task(name='fetch_datahub_data_task')
-def fetch_datahub_data_task(headers):
+def fetch_datahub_data_task(access_token):
     try:
+        headers = {
+            'Authorization': f'Bearer {access_token}'
+        }
         datahub_response = requests.get(settings.BDS_API_URL, headers=headers)
         datahub_response.raise_for_status()
         # loggercelery.info(f"Successfully fetched data from {settings.BDS_API_URL}")
@@ -103,8 +106,12 @@ def remove_file(path):
         loggercelery.error(f"Error removing file {path}: {e}")
 
 @shared_task(name='download_and_extract_files_task')
-def download_and_extract_files_task(datasets, headers):
+def download_and_extract_files_task(datasets):
     results = []
+    access_token = cache.get('ACCESS_TOKEN')
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
     for dataset in datasets:
         try:
             extracts_link_response = requests.get(dataset['ExtractsLink'], headers=headers)
@@ -203,7 +210,7 @@ def get_refresh_token(arg):
         loggercelery.info(f"Successfully refreshed token")
         # loggercelery.info(f"Access token: {token_data['access_token']}")
         # loggercelery.info(f"Refresh token: {token_data['refresh_token']}")
-        return token_data
+        return token_data['access_token']
     except requests.exceptions.RequestException as e:
         loggercelery.error(f"Failed to refresh token: {e}")
         return {"error": str(e)}
@@ -229,10 +236,6 @@ def get_refresh_token(arg):
 def execute_sequential_tasks(arg):
     loggercelery.info(f"execute_sequential_tasks ran arg: {arg}")
     
-    access_token = cache.get('ACCESS_TOKEN')
-    headers = {
-        'Authorization': f'Bearer {access_token}'
-    }
     
     filter_names = [
         "Role Details",
@@ -243,10 +246,10 @@ def execute_sequential_tasks(arg):
     
     chain_tasks = chain(
         get_refresh_token.s(arg),
-        fetch_datahub_data_task.s(headers),
+        fetch_datahub_data_task.s(),
         filter_objects_task.s(filter_names, 'Full'),
         process_datasets_task.s('Full'),
-        download_and_extract_files_task.s(headers)
+        download_and_extract_files_task.s()
     )
     
     chain_tasks.apply_async(link_error=handle_task_failure.s())
