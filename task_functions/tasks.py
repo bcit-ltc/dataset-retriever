@@ -25,7 +25,13 @@ def register_network_session():
         loggercelery.error(f"Failed to connect: {e}")
         raise
 
-def fetch_datahub_data(headers):
+@shared_task(name='fetch_datahub_data')
+def fetch_datahub_data(token_data):
+
+    headers = {
+        'Authorization': f'Bearer {token_data['access_token']}'
+    }
+
     try:
         datahub_response = requests.get(settings.BDS_API_URL, headers=headers)
         datahub_response.raise_for_status()
@@ -38,6 +44,7 @@ def fetch_datahub_data(headers):
         loggercelery.error(f"Error decoding JSON from the response from {settings.BDS_API_URL}")
         return None
 
+@shared_task(name='filter_objects')
 def filter_objects(datahub_data, filter_names, object_type):
     return [obj for obj in datahub_data['Objects'] if obj[object_type]['Name'] in filter_names]
 
@@ -175,20 +182,9 @@ def retriever(arg, object_type='Full'):
     
     return None
 
-
-
-@shared_task(name='execute_sequential_tasks')
-def execute_sequential_tasks(arg):
-    loggercelery.info(f"get_refresh_token ran arg: {arg}")
-    # chain_tasks = chain(get_refresh_token.s("10"), register_network_session2.s(), taskc.s())
-    chain_tasks = chain(get_refresh_token.s("10"), taskc.s())
-    chain_tasks.apply_async(link_error=handle_task_failure.s())
-    # chain(get_refresh_token.s("10"), taskb.s(), taskc.s()).apply_async()
-    return None
-
 @shared_task(name='get_refresh_token')
 def get_refresh_token(arg):
-    loggercelery.info(f"taska ran arg: {arg}")
+    loggercelery.info(f"get_refresh_token finished")
 
     url = settings.OAUTH2_PROVIDER_TOKEN_URL
     data = {
@@ -219,10 +215,26 @@ def get_refresh_token(arg):
 #     raise Exception("register_network_session2 failed")
     # return "taskb return"
 
-@shared_task(name='taskc')
-def taskc(arg):
-    loggercelery.info(f"taskc ran arg: {arg}")
-    return "taskc return"
+# @shared_task(name='taskc')
+# def taskc(arg):
+#     loggercelery.info(f"taskc ran")
+#     return "taskc return"
+
+# @shared_task(name='taskd')
+# def taskd(arg):
+#     loggercelery.info(f"taskd ran: {arg}")
+#     return "taskd return"
+
+@shared_task(name='execute_sequential_tasks')
+def execute_sequential_tasks(arg):
+    loggercelery.info(f"get_refresh_token ran arg: {arg}")
+    chain_tasks = chain(get_refresh_token.s("10"), 
+                        fetch_datahub_data.s(),
+                        filter_objects.s(),
+                        )
+    chain_tasks.apply_async(link_error=handle_task_failure.s())
+    # chain(get_refresh_token.s("10"), taskb.s(), taskc.s()).apply_async()
+    return None
 
 @shared_task(name='handle_task_failure')
 def handle_task_failure(task_id):

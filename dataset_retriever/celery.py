@@ -27,9 +27,6 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 # Load task modules from all registered Django apps.
 app.autodiscover_tasks()
 
-@app.task
-def task3(arg):
-    print(f"Task 3 executed with argument: {arg}")
 
 app.conf.beat_schedule = {
     # 'task1-schedule': 
