@@ -17,6 +17,9 @@ class RetrieverTestCase(TestCase):
     @patch('task_functions.tasks.download_and_extract_files_task.apply_async', return_value=MagicMock())
     @patch('redis.StrictRedis')
     def test_execute_sequential_tasks_success(self, mock_redis, mock_download_and_extract_files, mock_process_datasets, mock_filter_objects, mock_fetch_datahub_data, mock_cache_get):
+        # Mock the Redis connection
+        mock_redis.return_value = MagicMock()
+
         # Mock the return values
         mock_fetch_datahub_data.return_value = MagicMock()
         mock_filter_objects.return_value = MagicMock()
@@ -39,6 +42,7 @@ class RetrieverTestCase(TestCase):
     @patch('redis.StrictRedis')
     def test_execute_sequential_tasks_connection_error(self, mock_redis, mock_cache_get):
         # Mock the Redis connection to raise a connection error
+        mock_redis.return_value = MagicMock()
         mock_redis.side_effect = Exception("Connection refused")
 
         # Call the task
@@ -52,6 +56,9 @@ class RetrieverTestCase(TestCase):
     @patch('task_functions.tasks.fetch_datahub_data_task.apply_async', return_value=MagicMock())
     @patch('redis.StrictRedis')
     def test_execute_sequential_tasks_fetch_datahub_data_failure(self, mock_redis, mock_fetch_datahub_data, mock_cache_get):
+        # Mock the Redis connection
+        mock_redis.return_value = MagicMock()
+
         # Mock the return values
         mock_fetch_datahub_data.return_value = None
 
