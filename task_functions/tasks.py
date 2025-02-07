@@ -144,6 +144,8 @@ def download_and_extract_files_task(datasets):
         except Exception as e:
             loggercelery.error(f"Failed to process {result['Name']} from {result['DownloadLink']}: {e}")
 
+    return None
+
 
 # @shared_task(name='task1')
 # def retriever(arg, object_type='Full'):

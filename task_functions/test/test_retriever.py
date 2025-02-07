@@ -10,15 +10,16 @@ class ExecuteSequentialTasksTest(TestCase):
     @patch('task_functions.tasks.process_datasets_task.s')
     @patch('task_functions.tasks.download_and_extract_files_task.s')
     @patch('task_functions.tasks.chain')
-    def test_execute_sequential_tasks(self, mock_chain, mock_download, mock_process, mock_filter, mock_fetch, mock_renew):
+    def test_execute_sequential_tasks(self, mock_renew, mock_fetch, mock_filter, mock_process, mock_download, mock_chain):
         # Arrange
         arg = 20
-        mock_chain.return_value = MagicMock()
-        mock_fetch.return_value = MagicMock()
-        mock_filter.return_value = MagicMock()
-        mock_process.return_value = MagicMock()
-        mock_download.return_value = MagicMock()
-        
+        mock_renew.return_value = "access_token"
+        mock_fetch.return_value = {'Objects': [{'Full': {'Name': 'Role Details', 'ExtractsLink': 'http://example.com'}}]}
+        mock_filter.return_value = [{'Full': {'Name': 'Role Details', 'ExtractsLink': 'http://example.com'}}]
+        mock_process.return_value = [{'Name': 'RoleDetails', 'ExtractsLink': 'http://example.com'}]
+        mock_download.return_value = None
+        mock_chain.return_value = None
+
         # Act
         execute_sequential_tasks(arg)
         
