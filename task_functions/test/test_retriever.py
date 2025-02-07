@@ -1,5 +1,5 @@
 from django.test import TestCase
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from task_functions.tasks import execute_sequential_tasks
 
 class ExecuteSequentialTasksTest(TestCase):
@@ -10,15 +10,15 @@ class ExecuteSequentialTasksTest(TestCase):
     @patch('task_functions.tasks.process_datasets_task.s')
     @patch('task_functions.tasks.download_and_extract_files_task.s')
     @patch('task_functions.tasks.chain')
-    def test_execute_sequential_tasks(self, mock_renew, mock_fetch, mock_filter, mock_process, mock_download, mock_chain):
+    def test_execute_sequential_tasks(self, mock_chain, mock_download, mock_process, mock_filter, mock_fetch, mock_renew):
         # Arrange
         arg = 20
+        mock_chain.return_value = mock_chain
         mock_renew.return_value = "access_token"
         mock_fetch.return_value = {'Objects': [{'Full': {'Name': 'Role Details', 'ExtractsLink': 'http://example.com'}}]}
         mock_filter.return_value = [{'Full': {'Name': 'Role Details', 'ExtractsLink': 'http://example.com'}}]
         mock_process.return_value = [{'Name': 'RoleDetails', 'ExtractsLink': 'http://example.com'}]
         mock_download.return_value = None
-        mock_chain.return_value = None
 
         # Act
         execute_sequential_tasks(arg)
@@ -36,4 +36,4 @@ class ExecuteSequentialTasksTest(TestCase):
             mock_process.return_value,
             mock_download.return_value
         )
-        mock_chain().apply_async.assert_called_once_with(link_error=MagicMock())
+        mock_chain.apply_async.assert_called_once_with(link_error=mock_chain().link_error)
