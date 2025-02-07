@@ -213,10 +213,10 @@ def get_refresh_token(arg):
         return {"error": str(e)}
 
 
-@shared_task(name='register_network_session2')
-def register_network_session2(arg):
-    loggercelery.info(f"register_network_session2 ran arg: {arg}")
-    raise Exception("register_network_session2 failed")
+# @shared_task(name='register_network_session2')
+# def register_network_session2(arg):
+#     loggercelery.info(f"register_network_session2 ran arg: {arg}")
+#     raise Exception("register_network_session2 failed")
     # return "taskb return"
 
 @shared_task(name='taskc')

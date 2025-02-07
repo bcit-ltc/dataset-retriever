@@ -183,13 +183,21 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 # CELERYD_TIME_LIMIT=1800
 # CELERYD_HIJACK_ROOT_LOGGER = False
 
+import logging
+class InfoOnlyFilter(logging.Filter):
+    def filter(self, record):
+        return record.levelno == logging.INFO
+    
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "filters": {
         'require_debug_true': {
             '()': 'django.utils.log.RequireDebugTrue',
-        }
+        },
+        'info_only': {
+            '()': InfoOnlyFilter,
+        },
     },
     "formatters": {
         "verbose": {
@@ -197,11 +205,15 @@ LOGGING = {
             "style": "{",
         },
         "simple": {
-            "format": "{levelname} {message}",
+            "format": "{levelname} {asctime} {message}",
             "style": "{",
         },
         "custom": {
             "format": "{levelname} {asctime} {name} {funcName} >>> {message}",
+            "style": "{",
+        },
+        "public_view": {
+            "format": "{asctime} {message}",
             "style": "{",
         },
     },
@@ -219,6 +231,14 @@ LOGGING = {
             "formatter": "custom",
             "maxBytes": 1024 * 1024 * 10,  # 10 MB
             # "filters": ['require_debug_true']
+        },
+        "homepage_log": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": "page.log",
+            "formatter": "public_view",
+            "maxBytes": 1024 * 1024 * 10,  # 10 MB
+            "filters": ['info_only']
         },
     },
     "loggers": {
@@ -238,7 +258,7 @@ LOGGING = {
             "propagate": True,
         },
         "celery.task": {
-            "handlers": ["console"],
+            "handlers": ["console", "homepage_log"],
             "level": "INFO",
             "propagate": True,
         },
