@@ -25,14 +25,14 @@ class ExecuteSequentialTasksTest(TestCase):
         # Assert
         mock_renew.assert_called_once_with(arg)
         mock_fetch.assert_called_once()
-        mock_filter.assert_called_once_with(mock_fetch(), ['Role Details', 'Users', 'Organizational Units', 'Enrollments and Withdrawals'], 'Full')
-        mock_process.assert_called_once_with(mock_filter(), 'Full')
-        mock_download.assert_called_once_with(mock_process())
+        mock_filter.assert_called_once_with(mock_fetch.return_value, ['Role Details', 'Users', 'Organizational Units', 'Enrollments and Withdrawals'], 'Full')
+        mock_process.assert_called_once_with(mock_filter.return_value, 'Full')
+        mock_download.assert_called_once_with(mock_process.return_value)
         mock_chain.assert_called_once_with(
-            mock_renew(),
-            mock_fetch(),
-            mock_filter(mock_fetch(), ['Role Details', 'Users', 'Organizational Units', 'Enrollments and Withdrawals'], 'Full'),
-            mock_process(mock_filter(mock_fetch(), ['Role Details', 'Users', 'Organizational Units', 'Enrollments and Withdrawals'], 'Full')),
-            mock_download(mock_process(mock_filter(mock_fetch(), ['Role Details', 'Users', 'Organizational Units', 'Enrollments and Withdrawals'], 'Full')))
+            mock_renew.return_value,
+            mock_fetch.return_value,
+            mock_filter.return_value,
+            mock_process.return_value,
+            mock_download.return_value
         )
         mock_chain().apply_async.assert_called_once_with(link_error=MagicMock())
