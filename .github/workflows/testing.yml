@@ -35,4 +35,8 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        pytest --ds=dataset_retriever.settings --cov=task_functions --cov-report=term -s
+        pytest --ds=dataset_retriever.settings --cov=task_functions --cov-report=term -s --tb=short | tee test-results.txt
+    - name: Print test summary
+      run: |
+        echo "Test Summary:"
+        tail -n 10 test-results.txt
