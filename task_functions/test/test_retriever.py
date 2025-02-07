@@ -1,5 +1,5 @@
 from django.test import TestCase
-from unittest.mock import patch
+from unittest.mock import patch, call
 from task_functions.tasks import execute_sequential_tasks
 
 class ExecuteSequentialTasksTest(TestCase):
@@ -25,7 +25,7 @@ class ExecuteSequentialTasksTest(TestCase):
         
         # Assert
         mock_renew.assert_called_once_with(arg)
-        mock_fetch.assert_called_once_with(mock_renew.return_value)
+        mock_fetch.assert_called_once_with("access_token")
         mock_filter.assert_called_once_with(mock_fetch.return_value, ['Role Details', 'Users', 'Organizational Units', 'Enrollments and Withdrawals'], 'Full')
         mock_process.assert_called_once_with(mock_filter.return_value, 'Full')
         mock_download.assert_called_once_with(mock_process.return_value)
@@ -36,4 +36,4 @@ class ExecuteSequentialTasksTest(TestCase):
             mock_process.return_value,
             mock_download.return_value
         )
-        mock_chain.apply_async.assert_called_once_with(link_error=mock_chain().link_error)
+        mock_chain().apply_async.assert_called_once_with(link_error=mock_chain().link_error)
