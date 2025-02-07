@@ -1,62 +1,38 @@
 from django.test import TestCase
-from unittest.mock import patch
-from task_functions.tasks import retriever
+from unittest.mock import patch, call
+from task_functions.tasks import execute_sequential_tasks, renew_token, fetch_datahub_data_task, filter_objects_task, process_datasets_task, download_and_extract_files_task, handle_task_failure
 
-class RetrieverTestCase(TestCase):
+class ExecuteSequentialTasksTest(TestCase):
 
-    # @patch('task_functions.tasks.register_network_session')
-    @patch('task_functions.tasks.fetch_datahub_data')
-    @patch('task_functions.tasks.filter_objects')
-    @patch('task_functions.tasks.process_datasets')
-    @patch('task_functions.tasks.download_and_extract_files')
-    @patch('django.core.cache.cache.get')
-    def test_retriever_success(self, mock_cache_get, mock_download_and_extract_files, mock_process_datasets, mock_filter_objects, mock_fetch_datahub_data):
-        # Mock the return values
-        # mock_register_network_session.return_value = None
-        mock_fetch_datahub_data.return_value = {'Objects': [{'Full': {'Name': 'Role Details', 'ExtractsLink': 'http://example.com'}}]}
-        mock_filter_objects.return_value = [{'Full': {'Name': 'Role Details', 'ExtractsLink': 'http://example.com'}}]
-        mock_process_datasets.return_value = [{'Name': 'RoleDetails', 'ExtractsLink': 'http://example.com'}]
-        mock_download_and_extract_files.return_value = None
-        mock_cache_get.return_value = 'mock_access_token'
+    @patch('task_functions.tasks.download_and_extract_files_task.s')
+    @patch('task_functions.tasks.process_datasets_task.s')
+    @patch('task_functions.tasks.filter_objects_task.s')
+    @patch('task_functions.tasks.fetch_datahub_data_task.s')
+    @patch('task_functions.tasks.renew_token.s')
+    @patch('task_functions.tasks.chain')
+    def test_execute_sequential_tasks(self, mock_chain, mock_renew_token, mock_fetch_datahub_data_task, mock_filter_objects_task, mock_process_datasets_task, mock_download_and_extract_files_task):
+        arg = 20
+        filter_names = [
+            "Role Details",
+            "Users",
+            "Organizational Units",
+            "Enrollments and Withdrawals",
+        ]
 
-        # Call the function
-        result = retriever('some_argument')
+        execute_sequential_tasks(arg)
 
-        # Assertions
-        self.assertIsNone(result)
-        # mock_register_network_session.assert_called_once()
-        mock_fetch_datahub_data.assert_called_once()
-        mock_filter_objects.assert_called_once()
-        mock_process_datasets.assert_called_once()
-        mock_download_and_extract_files.assert_called_once()
-        mock_cache_get.assert_called_once()
+        mock_renew_token.assert_called_once_with(arg)
+        mock_fetch_datahub_data_task.assert_called_once_with()
+        mock_filter_objects_task.assert_called_once_with(filter_names, 'Full')
+        mock_process_datasets_task.assert_called_once_with('Full')
+        mock_download_and_extract_files_task.assert_called_once_with()
 
-    # @patch('task_functions.tasks.register_network_session')
-    @patch('django.core.cache.cache.get')
-    def test_retriever_connection_error(self, mock_cache_get):
-        # Mock the return value to raise a ConnectionError
-        # mock_register_network_session.side_effect = ConnectionError("Failed to connect")
-        mock_cache_get.return_value = 'mock_access_token'
-        # Call the function
-        result = retriever('some_argument')
-        # Assertions
-        self.assertIsNone(result)
-        # mock_register_network_session.assert_called_once()
+        mock_chain.assert_called_once_with(
+            mock_renew_token(),
+            mock_fetch_datahub_data_task(),
+            mock_filter_objects_task(),
+            mock_process_datasets_task(),
+            mock_download_and_extract_files_task()
+        )
 
-    # @patch('task_functions.tasks.register_network_session')
-    @patch('task_functions.tasks.fetch_datahub_data')
-    @patch('django.core.cache.cache.get')
-    def test_retriever_fetch_datahub_data_failure(self, mock_cache_get, mock_fetch_datahub_data):
-        # Mock the return values
-        # mock_register_network_session.return_value = None
-        mock_fetch_datahub_data.return_value = None
-        mock_cache_get.return_value = 'mock_access_token'
-
-        # Call the function
-        result = retriever('some_argument')
-
-        # Assertions
-        self.assertIsNone(result)
-        # mock_register_network_session.assert_called_once()
-        mock_fetch_datahub_data.assert_called_once()
-        mock_cache_get.assert_called_once()
+        mock_chain().apply_async.assert_called_once_with(link_error=handle_task_failure.s())

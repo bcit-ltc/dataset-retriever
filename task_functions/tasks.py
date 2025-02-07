@@ -25,8 +25,13 @@ def register_network_session():
         loggercelery.error(f"Failed to connect: {e}")
         raise
 
-def fetch_datahub_data(headers):
+@shared_task(name='fetch_datahub_data_task')
+def fetch_datahub_data_task():
     try:
+        access_token = cache.get('ACCESS_TOKEN')
+        headers = {
+            'Authorization': f'Bearer {access_token}'
+        }
         datahub_response = requests.get(settings.BDS_API_URL, headers=headers)
         datahub_response.raise_for_status()
         # loggercelery.info(f"Successfully fetched data from {settings.BDS_API_URL}")
@@ -38,10 +43,12 @@ def fetch_datahub_data(headers):
         loggercelery.error(f"Error decoding JSON from the response from {settings.BDS_API_URL}")
         return None
 
-def filter_objects(datahub_data, filter_names, object_type):
+@shared_task(name='filter_objects_task')
+def filter_objects_task(datahub_data, filter_names, object_type):
     return [obj for obj in datahub_data['Objects'] if obj[object_type]['Name'] in filter_names]
 
-def process_datasets(filtered_objects, object_type):
+@shared_task(name='process_datasets_task')
+def process_datasets_task(filtered_objects, object_type):
     datasets = []
     for obj in filtered_objects:
         name = obj[object_type]['Name'].replace(" ", "")
@@ -99,8 +106,13 @@ def remove_file(path):
     except Exception as e:
         loggercelery.error(f"Error removing file {path}: {e}")
 
-def download_and_extract_files(datasets, headers):
+@shared_task(name='download_and_extract_files_task')
+def download_and_extract_files_task(datasets):
     results = []
+    access_token = cache.get('ACCESS_TOKEN')
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
     for dataset in datasets:
         try:
             extracts_link_response = requests.get(dataset['ExtractsLink'], headers=headers)
@@ -133,10 +145,12 @@ def download_and_extract_files(datasets, headers):
         except Exception as e:
             loggercelery.error(f"Failed to process {result['Name']} from {result['DownloadLink']}: {e}")
 
+    return None
 
-@shared_task(name='task1')
-def retriever(arg, object_type='Full'):
-    loggercelery.info(f"task1 ran arg: {arg}")
+
+# @shared_task(name='task1')
+# def retriever(arg, object_type='Full'):
+#     loggercelery.info(f"task1 ran arg: {arg}")
 
     # try:
     #     register_network_session()
@@ -144,50 +158,42 @@ def retriever(arg, object_type='Full'):
     #     loggercelery.error(f"Failed to connect: {e}")
     #     return None
     
-    access_token = cache.get('ACCESS_TOKEN')
+    # access_token = cache.get('ACCESS_TOKEN')
 
-    headers = {
-        'Authorization': f'Bearer {access_token}'
-    }
+    # headers = {
+    #     'Authorization': f'Bearer {access_token}'
+    # }
     
-    datahub_data = fetch_datahub_data(headers)
-    if not datahub_data:
-        return None
+    # datahub_data = fetch_datahub_data(headers)
+    # if not datahub_data:
+    #     return None
     
-    filter_names = [
-        "Role Details",
-        "Users",
-        "Organizational Units",
-        "Enrollments and Withdrawals",
-    ]
-    if object_type == "Differential":
-        filter_names = [name + " Differential" for name in filter_names]
+    # filter_names = [
+    #     "Role Details",
+    #     "Users",
+    #     "Organizational Units",
+    #     "Enrollments and Withdrawals",
+    # ]
+    # if object_type == "Differential":
+    #     filter_names = [name + " Differential" for name in filter_names]
     
-    filtered_objects = filter_objects(datahub_data, filter_names, object_type)
-    if not filtered_objects:
-        return None
+    # filtered_objects = filter_objects(datahub_data, filter_names, object_type)
+    # if not filtered_objects:
+    #     return None
     
-    datasets = process_datasets(filtered_objects, object_type)
-    if not datasets:
-        return None
+    # datasets = process_datasets(filtered_objects, object_type)
+    # if not datasets:
+    #     return None
     
-    download_and_extract_files(datasets, headers)
+    # download_and_extract_files(datasets, headers)
     
-    return None
+    # return None
 
 
 
-@shared_task(name='execute_sequential_tasks')
-def execute_sequential_tasks(arg):
-    loggercelery.info(f"get_refresh_token ran arg: {arg}")
-    # chain_tasks = chain(get_refresh_token.s("10"), register_network_session2.s(), taskc.s())
-    chain_tasks = chain(get_refresh_token.s("10"), taskc.s())
-    chain_tasks.apply_async(link_error=handle_task_failure.s())
-    # chain(get_refresh_token.s("10"), taskb.s(), taskc.s()).apply_async()
-    return None
 
-@shared_task(name='get_refresh_token')
-def get_refresh_token(arg):
+@shared_task(name='renew_token')
+def renew_token(arg):
     loggercelery.info(f"taska ran arg: {arg}")
 
     url = settings.OAUTH2_PROVIDER_TOKEN_URL
@@ -205,9 +211,9 @@ def get_refresh_token(arg):
         cache.set('ACCESS_TOKEN', token_data['access_token'])
         cache.set('REFRESH_TOKEN', token_data['refresh_token'])
         loggercelery.info(f"Successfully refreshed token")
-        loggercelery.info(f"Access token: {token_data['access_token']}")
-        loggercelery.info(f"Refresh token: {token_data['refresh_token']}")
-        return token_data
+        # loggercelery.info(f"Access token: {token_data['access_token']}")
+        # loggercelery.info(f"Refresh token: {token_data['refresh_token']}")
+        return None
     except requests.exceptions.RequestException as e:
         loggercelery.error(f"Failed to refresh token: {e}")
         return {"error": str(e)}
@@ -219,10 +225,38 @@ def get_refresh_token(arg):
 #     raise Exception("register_network_session2 failed")
     # return "taskb return"
 
-@shared_task(name='taskc')
-def taskc(arg):
-    loggercelery.info(f"taskc ran arg: {arg}")
-    return "taskc return"
+# @shared_task(name='taskc')
+# def taskc(arg):
+#     loggercelery.info(f"taskc ran arg: {arg}")
+#     return "taskc return"
+
+# @shared_task(name='taskd')
+# def taskd(arg):
+#     loggercelery.info(f"taskd ran: {arg}")
+#     return "taskd return"
+
+@shared_task(name='execute_sequential_tasks')
+def execute_sequential_tasks(arg):
+    loggercelery.info(f"execute_sequential_tasks ran arg: {arg}")
+    
+    
+    filter_names = [
+        "Role Details",
+        "Users",
+        "Organizational Units",
+        "Enrollments and Withdrawals",
+    ]
+    
+    chain_tasks = chain(
+        renew_token.s(arg),
+        fetch_datahub_data_task.s(),
+        filter_objects_task.s(filter_names, 'Full'),
+        process_datasets_task.s('Full'),
+        download_and_extract_files_task.s()
+    )
+    
+    chain_tasks.apply_async(link_error=handle_task_failure.s())
+    return None
 
 @shared_task(name='handle_task_failure')
 def handle_task_failure(task_id):
