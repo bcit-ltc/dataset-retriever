@@ -38,8 +38,12 @@ class RetrieverTestCase(TestCase):
     @patch('task_functions.tasks.cache.get', return_value='mock_access_token')
     @patch('redis.StrictRedis')
     def test_execute_sequential_tasks_connection_error(self, mock_redis, mock_cache_get):
+        # Mock the Redis connection to raise a connection error
+        mock_redis.side_effect = Exception("Connection refused")
+
         # Call the task
         result = execute_sequential_tasks('some_argument')
+
         # Assertions
         self.assertIsNone(result)
         mock_redis.assert_called_once()
