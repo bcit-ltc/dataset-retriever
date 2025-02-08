@@ -26,7 +26,7 @@ def register_network_session():
         raise
 
 @shared_task(name='fetch_datahub_data_task')
-def fetch_datahub_data_task():
+def fetch_datahub_data_task(arg):
     try:
         access_token = cache.get('ACCESS_TOKEN')
         headers = {
