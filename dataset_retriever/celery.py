@@ -39,7 +39,7 @@ app.conf.beat_schedule = {
     # },
     'task2-schedule':{
         'task': 'execute_sequential_tasks',
-        'schedule': crontab(),
+        'schedule': crontab(minute=0, hour=3),
         'args': (20,),
         # 'options': {
         #     'queue': 'default',
