@@ -129,7 +129,7 @@ def download_and_extract_files_task(datasets):
     
     for result in results:
         try:
-            loggercelery.info(f"Processing {result['Name']} from {result['DownloadLink']}")
+            loggercelery.info(f"Processing {result['Name']}") # from {result['DownloadLink']}")
             date = result['CreatedDate'].replace(":", "-").replace("T", "_").split(".")[0]
             zip_file_name = f"{result['Name']}__{date}.zip"
             csv_file_name = f"{result['Name']}__{date}.csv"
