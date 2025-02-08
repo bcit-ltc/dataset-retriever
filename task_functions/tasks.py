@@ -194,7 +194,7 @@ def download_and_extract_files_task(datasets):
 
 @shared_task(name='renew_token')
 def renew_token(arg):
-    loggercelery.info(f"taska ran arg: {arg}")
+    loggercelery.info(f"renew_token ran with arg: {arg}")
 
     url = settings.OAUTH2_PROVIDER_TOKEN_URL
     data = {
