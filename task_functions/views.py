@@ -21,9 +21,9 @@ class Home(View):
         try:
             with open(log_file_path, 'r') as log_file:
                 lines = log_file.readlines()
-                last_10_info_lines = lines[-10:]
+                last_50_info_lines = lines[-50:]
                 page = ""
-                for line in last_10_info_lines:
+                for line in last_50_info_lines:
                     page += line.strip() + "<br>"
                 return HttpResponse(page)
         except FileNotFoundError:
