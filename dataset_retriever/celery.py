@@ -29,7 +29,7 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 # Get the current time
-current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+# current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 app.conf.beat_schedule = {
     # 'task1-schedule': 
@@ -40,7 +40,7 @@ app.conf.beat_schedule = {
     #     'schedule': crontab(minute='*/30'), # runs every half hour
     #     'args': ([10])
     # },
-    'task2-schedule': {
+    'schedule_sequential_tasks': {
         'task': 'execute_sequential_tasks',
         'schedule': crontab(minute=0, hour=3),
         'args': (20,),
@@ -53,9 +53,9 @@ app.conf.beat_schedule = {
         #         queue='default')
         # }
     },
-    'renew_token_schedule': {
-        'task': 'renew_token',
-        'schedule': crontab(hour='*/19'),  # 19 hours interval
-        'args': (current_time),  # Pass any required arguments here
-    }
+    # 'renew_token_schedule': {
+    #     'task': 'renew_token',
+    #     'schedule': crontab(hour='*/19'),  # 19 hours interval
+    #     'args': (current_time),  # Pass any required arguments here
+    # }
 }
