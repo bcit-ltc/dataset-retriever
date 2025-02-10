@@ -42,7 +42,8 @@ app.conf.beat_schedule = {
     # },
     'schedule_sequential_tasks': {
         'task': 'execute_sequential_tasks',
-        'schedule': crontab(minute=0, hour=3),
+        # 'schedule': crontab(minute=0, hour=3),
+        'schedule': crontab(minute='*/30'),  # 30 minutes interval
         'args': (20,),
         # 'options': {
         #     'queue': 'default',
@@ -53,9 +54,10 @@ app.conf.beat_schedule = {
         #         queue='default')
         # }
     },
-    # 'renew_token_schedule': {
-    #     'task': 'renew_token',
-    #     'schedule': crontab(hour='*/19'),  # 19 hours interval
-    #     'args': (current_time),  # Pass any required arguments here
-    # }
+    'renew_token_schedule': {
+        'task': 'renew_token',
+        # 'schedule': crontab(hour='*/19'),  # 19 hours interval
+        'schedule': crontab(minute='*/28'),  # 28 minutes interval
+        'args': (11),  # Pass any required arguments here
+    }
 }
