@@ -3,7 +3,6 @@ import logging
 from celery import Celery, Signature
 from celery.schedules import crontab
 from celery.signals import setup_logging
-from datetime import datetime
 
 # Set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dataset_retriever.settings')
@@ -28,22 +27,20 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 # Load task modules from all registered Django apps.
 app.autodiscover_tasks()
 
-# Get the current time
-# current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
 app.conf.beat_schedule = {
-    # 'task1-schedule': 
-    # {
-    #     'task': 'task1',
-    #     # 'schedule': crontab(), # runs every minute
-    #     # 'schedule': crontab(minute='*/5'), # runs every 5 minutes
-    #     'schedule': crontab(minute='*/30'), # runs every half hour
-    #     'args': ([10])
-    # },
+    'renew_token_schedule': {
+        'task': 'renew_token',
+        'schedule': [
+            crontab(minute=0, hour='0-2,4-23'),  # Every hour except 3 AM
+            crontab(minute=55, hour=2),          # Additional run at 2:55 AM
+            crontab(minute=30, hour=3)           # Additional run at 3:30 AM
+        ],
+        'args': (11,),
+    },
     'schedule_sequential_tasks': {
         'task': 'execute_sequential_tasks',
-        # 'schedule': crontab(minute=0, hour=3),
-        'schedule': crontab(minute='*/30'),  # 30 minutes interval
+        'schedule': crontab(minute=0, hour=3),
+        # 'schedule': crontab(minute='*/30'),  # 30 minutes interval
         'args': (20,),
         # 'options': {
         #     'queue': 'default',
@@ -54,10 +51,4 @@ app.conf.beat_schedule = {
         #         queue='default')
         # }
     },
-    'renew_token_schedule': {
-        'task': 'renew_token',
-        # 'schedule': crontab(hour='*/19'),  # 19 hours interval
-        'schedule': crontab(minute='*/5'),  # 5 minutes interval
-        'args': (11,),
-    }
 }
