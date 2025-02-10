@@ -58,6 +58,6 @@ app.conf.beat_schedule = {
         'task': 'renew_token',
         # 'schedule': crontab(hour='*/19'),  # 19 hours interval
         'schedule': crontab(minute='*/5'),  # 5 minutes interval
-        'args': (11),  # Pass any required arguments here
+        'args': (11,),
     }
 }
