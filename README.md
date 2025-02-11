@@ -1,4 +1,6 @@
 # Dataset Retriever
+[![Course Production Pipeline CI](https://github.com/BCIT-LTC/dataset-retriever/actions/workflows/cp-pipeline-ci.yml/badge.svg?branch=main)](https://github.com/BCIT-LTC/dataset-retriever/actions/workflows/cp-pipeline-ci.yml)
+[![Testing](https://github.com/BCIT-LTC/dataset-retriever/actions/workflows/testing.yml/badge.svg)](https://github.com/BCIT-LTC/dataset-retriever/actions/workflows/testing.yml)
 
 Dataset Retriever is a Django-based application designed to fetch Brightspace dataset API and save the csv files into a shared directory. It leverages OAuth2 for authentication, Celery for task scheduling, and Redis for caching.
 
