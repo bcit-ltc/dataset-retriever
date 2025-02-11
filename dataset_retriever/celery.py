@@ -57,9 +57,9 @@ app.conf.beat_schedule = {
         #         queue='default')
         # }
     },
-    'renew_token_every_2_minutes': {
-        'task': 'renew_token',
-        'schedule': crontab(minute='*/2'),  # Every 2 minutes
-        'args': (2,),
-    },
+    # 'renew_token_every_2_minutes': {
+    #     'task': 'renew_token',
+    #     'schedule': crontab(minute='*/2'),  # Every 2 minutes
+    #     'args': (2,),
+    # },
 }

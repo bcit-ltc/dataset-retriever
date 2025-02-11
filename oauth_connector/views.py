@@ -41,8 +41,8 @@ class OAuth2CallbackView(View):
             response_data = response.json()
 
             if response.status_code == 200:
-                cache.set('ACCESS_TOKEN', response_data['access_token'])
-                cache.set('REFRESH_TOKEN', response_data['refresh_token'])
+                cache.set('ACCESS_TOKEN', response_data['access_token'], timeout=3900)
+                cache.set('REFRESH_TOKEN', response_data['refresh_token'], timeout=3900)
                 # return JsonResponse(response_data)
                 logger.info(response_data)
                 return redirect('/')
