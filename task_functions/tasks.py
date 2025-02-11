@@ -169,13 +169,13 @@ def renew_token(arg):
         cache.set('ACCESS_TOKEN', token_data['access_token'])
         cache.set('REFRESH_TOKEN', token_data['refresh_token'])
         loggercelery.info(f"Successfully refreshed token")
-        # loggercelery.info(f"Access token: {token_data['access_token']}")
-        # loggercelery.info(f"Refresh token: {token_data['refresh_token']}")
         return None
     except requests.exceptions.RequestException as e:
         loggercelery.error(f"Failed to refresh token: {e}")
+        logger.error(f"Request data: {data}")
+        if response is not None:
+            logger.error(f"Response content: {response.content}")
         return {"error": str(e)}
-
 
 @shared_task(name='execute_sequential_tasks')
 def execute_sequential_tasks(arg):
