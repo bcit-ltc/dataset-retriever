@@ -28,14 +28,20 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    'renew_token_schedule': {
+    'renew_token_schedule_hourly': {
         'task': 'renew_token',
-        'schedule': [
-            crontab(minute=0, hour='0-2,4-23'),  # Every hour except 3 AM
-            crontab(minute=55, hour=2),          # Additional run at 2:55 AM
-            crontab(minute=30, hour=3)           # Additional run at 3:30 AM
-        ],
-        'args': (11,),
+        'schedule': crontab(minute=0, hour='0-2,4-23'),  # Every hour except 3 AM
+        'args': (1,),
+    },
+    'renew_token_schedule_255am': {
+        'task': 'renew_token',
+        'schedule': crontab(minute=55, hour=2),  # Additional run at 2:55 AM
+        'args': (255,),
+    },
+    'renew_token_schedule_330am': {
+        'task': 'renew_token',
+        'schedule': crontab(minute=30, hour=3),  # Additional run at 3:30 AM
+        'args': (330,),
     },
     'schedule_sequential_tasks': {
         'task': 'execute_sequential_tasks',
