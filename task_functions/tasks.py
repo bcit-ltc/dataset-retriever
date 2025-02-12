@@ -1,4 +1,3 @@
-import datetime
 import json
 import os
 import requests
@@ -132,8 +131,6 @@ def download_and_extract_files_task(datasets):
         try:
             loggercelery.info(f"Processing {result['Name']}") # from {result['DownloadLink']}")
             date = result['CreatedDate'].replace(":", "-").replace("T", "_").split(".")[0]
-            # add timestamp for uniqueness
-            # current_timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
             zip_file_name = f"{result['Name']}__{date}.zip"
             csv_file_name = f"{result['Name']}__{date}.csv"
 
