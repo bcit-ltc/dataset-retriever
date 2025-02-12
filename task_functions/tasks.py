@@ -133,9 +133,9 @@ def download_and_extract_files_task(datasets):
             loggercelery.info(f"Processing {result['Name']}") # from {result['DownloadLink']}")
             date = result['CreatedDate'].replace(":", "-").replace("T", "_").split(".")[0]
             # add timestamp for uniqueness
-            current_timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-            zip_file_name = f"{result['Name']}__{date}__{current_timestamp}.zip"
-            csv_file_name = f"{result['Name']}__{date}__{current_timestamp}.csv"
+            # current_timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+            zip_file_name = f"{result['Name']}__{date}.zip"
+            csv_file_name = f"{result['Name']}__{date}.csv"
 
             # zip_upload_path = os.path.join(settings.NETWORK_DRIVE_PATH, zip_file_name)
             # csv_upload_path = os.path.join(settings.NETWORK_DRIVE_PATH, csv_file_name)
