@@ -1,4 +1,3 @@
-import datetime
 import json
 import os
 import requests
@@ -132,10 +131,8 @@ def download_and_extract_files_task(datasets):
         try:
             loggercelery.info(f"Processing {result['Name']}") # from {result['DownloadLink']}")
             date = result['CreatedDate'].replace(":", "-").replace("T", "_").split(".")[0]
-            # add timestamp for uniqueness
-            current_timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-            zip_file_name = f"{result['Name']}__{date}__{current_timestamp}.zip"
-            csv_file_name = f"{result['Name']}__{date}__{current_timestamp}.csv"
+            zip_file_name = f"{result['Name']}__{date}.zip"
+            csv_file_name = f"{result['Name']}__{date}.csv"
 
             # zip_upload_path = os.path.join(settings.NETWORK_DRIVE_PATH, zip_file_name)
             # csv_upload_path = os.path.join(settings.NETWORK_DRIVE_PATH, csv_file_name)
@@ -166,8 +163,8 @@ def renew_token(arg):
         response = requests.post(url, data=data)
         response.raise_for_status()  # Raises an error for HTTP error responses (4xx, 5xx)
         token_data = response.json()
-        cache.set('ACCESS_TOKEN', token_data['access_token'])
-        cache.set('REFRESH_TOKEN', token_data['refresh_token'])
+        cache.set('ACCESS_TOKEN', token_data['access_token'], timeout=3900)
+        cache.set('REFRESH_TOKEN', token_data['refresh_token'], timeout=3900)
         loggercelery.info(f"Successfully refreshed token")
         # loggercelery.info(f"Access token: {token_data['access_token']}")
         # loggercelery.info(f"Refresh token: {token_data['refresh_token']}")
