@@ -1,15 +1,16 @@
 # Dataset Retriever
+
 [![Course Production Pipeline CI](https://github.com/BCIT-LTC/dataset-retriever/actions/workflows/cp-pipeline-ci.yml/badge.svg?branch=main)](https://github.com/BCIT-LTC/dataset-retriever/actions/workflows/cp-pipeline-ci.yml)
 [![Testing](https://github.com/BCIT-LTC/dataset-retriever/actions/workflows/testing.yml/badge.svg)](https://github.com/BCIT-LTC/dataset-retriever/actions/workflows/testing.yml)
 
 Dataset Retriever is a Django-based application designed to fetch Brightspace dataset API and save the csv files into a shared directory. It leverages OAuth2 for authentication, Celery for task scheduling, and Redis for caching.
 
 ## Features
+
 - OAuth2 authentication for secure access to data sources.
 - Scheduled tasks using Celery to fetch and process datasets.
 - Integration with SMB for storing processed datasets.
 - Dockerized for easy deployment.
-
 
 ## Getting Started
 
@@ -21,13 +22,15 @@ Dataset Retriever is a Django-based application designed to fetch Brightspace da
 ### Installation
 
 1. Clone the repository:
-    ```sh
-    git clone https://github.com/yourusername/dataset-retriever.git
+
+    ``` shell
+    git clone https://github.com/bcit-ltc/dataset-retriever.git
     cd dataset-retriever
     ```
 
 2. Build and run the Docker containers:
-    ```sh
+
+    ``` shell
     docker-compose up --build
     ```
 
@@ -36,6 +39,7 @@ Dataset Retriever is a Django-based application designed to fetch Brightspace da
 ### Environment Variables
 
 Set the following environment variables directly in the Docker Compose file:
+
 - DEBUG
 - OAUTH2_PROVIDER_AUTHORIZATION_URL
 - OAUTH2_PROVIDER_TOKEN_URL
@@ -48,3 +52,11 @@ Set the following environment variables directly in the Docker Compose file:
 - NETWORK_DRIVE_PASSWORD
 - NETWORK_DRIVE_SERVER
 - NETWORK_DRIVE_PATH
+
+## License
+
+Mozilla Public License 2.0
+
+## About
+
+Developed in 🇨🇦 Canada at [BCIT's](https://www.bcit.ca/) [Learning and Teaching Centre](https://www.bcit.ca/learning-teaching-centre/). [Contact Us](mailto:courseproduction@bcit.ca).

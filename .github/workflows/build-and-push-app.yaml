@@ -1,0 +1,23 @@
+# Runs `.github/workflows/build-and-push-app.yaml` from bcit-ltc/.github
+name: Build & ship app/chart images
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-ship:
+    uses: bcit-ltc/.github/.github/workflows/build-and-push-app.yaml@main
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+      attestations: write
+      pull-requests: write
+      issues: write
+    with:
+      cdn_enabled: true
+      # Optional override (defaults to jpg,jpeg,png,webp,gif,svg,ico,mp4,webm,mp3,ogg,woff,woff2,ttf,otf,css,js,map)
+      # cdn_asset_exts: jpg,jpeg,png,webp,gif,svg,ico
+    secrets: inherit

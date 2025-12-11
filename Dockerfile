@@ -20,6 +20,11 @@ RUN set -ex; \
 # ============================================ Release
 
 FROM python:3.13.1-slim AS release
+
+LABEL maintainer=courseproduction@bcit.ca
+LABEL org.opencontainers.image.source="https://github.com/bcit-ltc/dataset-retriever"
+LABEL org.opencontainers.image.description="Fetch Brightspace dataset API and save the csv files into a shared directory."
+
 ENV PYTHONUNBUFFERED=1
 ENV PATH=/code:/opt/venv/bin:$PATH
 WORKDIR /code
