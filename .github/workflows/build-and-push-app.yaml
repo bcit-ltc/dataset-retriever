@@ -17,7 +17,7 @@ jobs:
       pull-requests: write
       issues: write
     with:
-      cdn_enabled: true
+      cdn_enabled: false
       # Optional override (defaults to jpg,jpeg,png,webp,gif,svg,ico,mp4,webm,mp3,ogg,woff,woff2,ttf,otf,css,js,map)
       # cdn_asset_exts: jpg,jpeg,png,webp,gif,svg,ico
     secrets: inherit
