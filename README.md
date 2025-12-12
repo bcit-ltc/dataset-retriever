@@ -17,7 +17,6 @@ Dataset Retriever is a Django-based application designed to fetch Brightspace da
 ### Prerequisites
 
 - Docker
-- Docker Compose
 
 ### Installation
 
