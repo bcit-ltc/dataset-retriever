@@ -1,7 +1,5 @@
 FROM python:3.13.1-slim AS base
 
-LABEL org.opencontainers.image.source="https://github.com/BCIT-LTC/dataset-retriever"
-
 ENV PYTHONUNBUFFERED=1
 ENV PATH=/code:/opt/venv/bin:$PATH
 
@@ -24,7 +22,7 @@ FROM python:3.13.1-slim AS release
 
 LABEL maintainer=courseproduction@bcit.ca
 LABEL org.opencontainers.image.source="https://github.com/bcit-ltc/dataset-retriever"
-LABEL org.opencontainers.image.description="Fetch Brightspace dataset API and save the csv files into a shared directory."
+LABEL org.opencontainers.image.description="Django application to run periodic backend scripts for fetching learning hub datasets."
 
 WORKDIR /code
 
